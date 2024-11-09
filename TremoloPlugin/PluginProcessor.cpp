@@ -10,6 +10,21 @@
 #include "PluginEditor.h"
 
 //==============================================================================
+
+//lines 16-25 credit to: https://github.com/elk-audio/freeverb/blob/main/FreeverbVST/Freeverb.cpp
+
+TremoloOSHEAudioProcessor::TremoloOSHEAudioProcessor(audioMasterCallback audioMaster)
+	: AudioEffectX(audioMaster, 1, 3)	// 1 program
+{
+	setNumInputs(2);		// stereo in
+	setNumOutputs(2);		// stereo out
+	setUniqueID('tremo');	// identify - CHANGE THIS TO MAKE YOUR OWN!!!
+	canMono();				// makes sense to feed both inputs with the same signal
+	canProcessReplacing();	// supports both accumulating and replacing output
+	strcpy(programName, "Default");	// default program name
+}
+
+/*
 TremoloOSHEAudioProcessor::TremoloOSHEAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
@@ -21,6 +36,8 @@ TremoloOSHEAudioProcessor::TremoloOSHEAudioProcessor()
                      #endif
                        )
 #endif
+*/
+
     , state (*this, nullptr, "STATE", {
         std::make_unique<juce::AudioParameterFloat> ("rate", "Rate", 0.0f, 20.0f, 10.0f), // rate is in Hz
         std::make_unique<juce::AudioParameterFloat> ("depth", "Depth", 0.0f, 1.0f, 0.5f),
