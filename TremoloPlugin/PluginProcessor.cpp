@@ -22,9 +22,15 @@ TremoloOSHEAudioProcessor::TremoloOSHEAudioProcessor()
                        )
 #endif
     , state (*this, nullptr, "STATE", {
+        /*
         std::make_unique<juce::AudioParameterFloat> ("rate", "Rate", 0.0f, 20.0f, 10.0f), // rate is in Hz
         std::make_unique<juce::AudioParameterFloat> ("depth", "Depth", 0.0f, 1.0f, 0.5f),
         std::make_unique<juce::AudioParameterFloat> ("gain", "Gain", 0.0f, 1.0f, 1.0f)
+        */
+        
+        std::make_unique<AudioParameterFloat> (ParameterID {"rate",  1}, "Rate", NormalisableRange<float> (0.0f, 20.0f), 5.0f), // rate is in Hz
+        std::make_unique<AudioParameterFloat> (ParameterID {"depth", 1}, "Depth", NormalisableRange<float> (0.0f, 1.0f), 0.5f),
+        std::make_unique<AudioParameterFloat> (ParameterID {"gain",  1}, "Gain", NormalisableRange<float> (0.0f, 1.0f), 1.0f)
     })
 {
 }
