@@ -63,7 +63,9 @@ public:
         : AudioProcessor (BusesProperties().withInput  ("Input",  AudioChannelSet::stereo())
                                            .withOutput ("Output", AudioChannelSet::stereo()))
     {
-        addParameter (gain = new AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 1.0f, 0.5f));
+        addParameter (rate = new AudioParameterFloat ({"rate", 1}, "Rate", 0.0f, 20.0f, 10.0f)); // rate is in Hz
+        addParameter (depth = new AudioParameterFloat ({"depth", 1}, "Depth", 0.0f, 1.0f, 0.5f));
+        addParameter (gain = new AudioParameterFloat ({"gain", 1}, "Gain", 0.0f, 1.0f, 1.0f));
     }
 
     //==============================================================================
@@ -85,7 +87,7 @@ public:
     bool hasEditor() const override                        { return true;   }
 
     //==============================================================================
-    const String getName() const override                  { return "Gain PlugIn"; }
+    const String getName() const override                  { return "Tremolo Plugin"; }
     bool acceptsMidi() const override                      { return false; }
     bool producesMidi() const override                     { return false; }
     double getTailLengthSeconds() const override           { return 0; }
