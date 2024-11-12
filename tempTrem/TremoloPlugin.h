@@ -115,7 +115,7 @@ public:
     
         for (int channel = 0; channel < totalNumInputChannels; ++channel)
         {
-            float* channelData = buffer.getWritePointer (channel);
+            auto* channelData = buffer.getWritePointer (channel);
 
             for (int i = 0; i < buffer.getNumSamples(); ++i)
             {    
