@@ -77,19 +77,27 @@ public:
     void releaseResources() override {}
 
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer&) override
-    {
-        double sampleRate = this->getSampleRate();
+    {  
+        float rateFloat = rate->get();
+        float depthFloat = depth->get();
+        float gainFloat = gain->get();
         
-        w = rate * 6.2831853 / sampleRate;
-        LFO = sin(w * position);
-        //LFO = sin(position * 6.2831853 * rate / sampleRate);
-        tremolo = depth * LFO + (1.0f - depth);
-        
-        buffer.applyTremolo (*tremolo);
-        buffer.applyGain (*gain);
-        
+        sampleRate = this->getSampleRate();
+        totalNumInputChannels  = getTotalNumInputChannels();
+        LFO = sin(position * 6.2831853 * rateFloat / sampleRate);
+    
+        for (int channel = 0; channel < totalNumInputChannels; ++channel)
+        {
+            float* channelData = buffer.getWritePointer (channel);
+
+            for (int i = 0; i < buffer.getNumSamples(); ++i)
+            {    
+                channelData[i] = channelData[i] * (depthFloat * LFO + (1.0f - depthFloat)); // Tremolo
+                channelData[i] *= gainFloat; // Gain
+            }
+        }
         position += 1;
-        if (position >= (6.2831853 / w))
+        if (position >= (sampleRate / rateFloat)) // Check if position is beyond number of samples in one LFO cycle
         {
             position = 0;
         }
@@ -97,18 +105,26 @@ public:
 
     void processBlock (AudioBuffer<double>& buffer, MidiBuffer&) override
     {
-        double sampleRate = this->getSampleRate();
+        float rateFloat = rate->get();
+        float depthFloat = depth->get();
+        float gainFloat = gain->get();
         
-        w = rate * 6.2831853 / sampleRate;
-        LFO = sin(w * position);
-        //LFO = sin(position * 6.2831853 * rate / sampleRate);
-        tremolo = depth * LFO + (1.0f - depth);
-        
-        buffer.applyTremolo (*tremolo);
-        buffer.applyGain (*gain);
-        
+        sampleRate = this->getSampleRate();
+        totalNumInputChannels  = getTotalNumInputChannels();
+        LFO = sin(position * 6.2831853 * rateFloat / sampleRate);
+    
+        for (int channel = 0; channel < totalNumInputChannels; ++channel)
+        {
+            float* channelData = buffer.getWritePointer (channel);
+
+            for (int i = 0; i < buffer.getNumSamples(); ++i)
+            {    
+                channelData[i] = channelData[i] * (depthFloat * LFO + (1.0f - depthFloat)); // Tremolo
+                channelData[i] *= gainFloat; // Gain
+            }
+        }
         position += 1;
-        if (position >= (6.2831853 / w))
+        if (position >= (sampleRate / rateFloat)) // Check if position is beyond number of samples in one LFO cycle
         {
             position = 0;
         }
@@ -161,10 +177,10 @@ private:
     AudioParameterFloat* depth;
     AudioParameterFloat* gain;
     
+    double sampleRate;
+    int totalNumInputChannels;
     int position; // Current sample position within LFO signal
-    float w; // w is in radians per sample
     float LFO; // Low-frequency oscillator
-    float tremolo;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TremoloProcessor)
