@@ -69,17 +69,49 @@ public:
     }
 
     //==============================================================================
-    void prepareToPlay (double, int) override {}
+    void prepareToPlay (double, int) override
+    {  
+        position = 0; // Initial value for sample position within LFO signal
+    }
+    
     void releaseResources() override {}
 
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer&) override
     {
+        double sampleRate = this->getSampleRate();
+        
+        w = rate * 6.2831853 / sampleRate;
+        LFO = sin(w * position);
+        //LFO = sin(position * 6.2831853 * rate / sampleRate);
+        tremolo = depth * LFO + (1.0f - depth);
+        
+        buffer.applyTremolo (*tremolo);
         buffer.applyGain (*gain);
+        
+        position += 1;
+        if (position >= (6.2831853 / w))
+        {
+            position = 0;
+        }
     }
 
     void processBlock (AudioBuffer<double>& buffer, MidiBuffer&) override
     {
-        buffer.applyGain ((float) *gain);
+        double sampleRate = this->getSampleRate();
+        
+        w = rate * 6.2831853 / sampleRate;
+        LFO = sin(w * position);
+        //LFO = sin(position * 6.2831853 * rate / sampleRate);
+        tremolo = depth * LFO + (1.0f - depth);
+        
+        buffer.applyTremolo (*tremolo);
+        buffer.applyGain (*gain);
+        
+        position += 1;
+        if (position >= (6.2831853 / w))
+        {
+            position = 0;
+        }
     }
 
     //==============================================================================
@@ -102,11 +134,15 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override
     {
+        MemoryOutputStream (destData, true).writeFloat (*rate);
+        MemoryOutputStream (destData, true).writeFloat (*depth);
         MemoryOutputStream (destData, true).writeFloat (*gain);
     }
 
     void setStateInformation (const void* data, int sizeInBytes) override
     {
+        rate->setValueNotifyingHost (MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
+        depth->setValueNotifyingHost (MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
         gain->setValueNotifyingHost (MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
     }
 
@@ -121,7 +157,14 @@ public:
 
 private:
     //==============================================================================
+    AudioParameterFloat* rate;
+    AudioParameterFloat* depth;
     AudioParameterFloat* gain;
+    
+    int position; // Current sample position within LFO signal
+    float w; // w is in radians per sample
+    float LFO; // Low-frequency oscillator
+    float tremolo;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TremoloProcessor)
