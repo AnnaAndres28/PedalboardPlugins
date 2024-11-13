@@ -78,14 +78,14 @@ public:
 
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer&) override
     {  
-        float rateFloat = rate->get();
-        float depthFloat = depth->get();
-        float gainFloat = gain->get();
+        rateFloat = rate->get();
+        depthFloat = depth->get();
+        gainFloat = gain->get();
         
         sampleRate = this->getSampleRate();
         totalNumInputChannels  = getTotalNumInputChannels();
         
-        w = 6.28318530718 * rateFloat / sampleRate;//***********this should maybe just be w=2*pi/rate without samp rate since this isn't being sampled
+        w = 6.28318530718 * rateFloat / sampleRate;//w = 6.28318530718 * rateFloat;
         LFO = sin(position * w);
     
         for (int channel = 0; channel < totalNumInputChannels; ++channel)
@@ -108,14 +108,14 @@ public:
 
     void processBlock (AudioBuffer<double>& buffer, MidiBuffer&) override
     {
-        float rateFloat = rate->get();
-        float depthFloat = depth->get();
-        float gainFloat = gain->get();
+        rateFloat = rate->get();
+        depthFloat = depth->get();
+        gainFloat = gain->get();
         
         sampleRate = this->getSampleRate();
         totalNumInputChannels  = getTotalNumInputChannels();
         
-        w = 6.28318530718 * rateFloat / sampleRate;
+        w = 6.28318530718 * rateFloat / sampleRate;//w = 6.28318530718 * rateFloat;
         LFO = sin(position * w);
     
         for (int channel = 0; channel < totalNumInputChannels; ++channel)
@@ -182,6 +182,10 @@ private:
     AudioParameterFloat* rate;
     AudioParameterFloat* depth;
     AudioParameterFloat* gain;
+    
+    float rateFloat;
+    float depthFloat;
+    float gainFloat;
     
     double sampleRate;
     int totalNumInputChannels;
