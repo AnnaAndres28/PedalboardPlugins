@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT name="GainPlugin" companyName="JUCE" version="1.0.0" userNotes="Gain audio plugin."
+<JUCERPROJECT name="TremoloPlugin" companyName="JUCE" version="1.0.0" userNotes="Tremolo audio plugin."
               companyWebsite="http://juce.com" defines="PIP_JUCE_EXAMPLES_DIRECTORY=L2hvbWUvaGVpbnR6L0pVQ0UvZXhhbXBsZXM="
               projectType="audioplug" pluginAUIsSandboxSafe="1" pluginManufacturer="JUCE"
               pluginFormats="buildVST3,buildAU,buildStandalone" useAppConfig="0"
               addUsingNamespaceToJuceHeader="1" id="VFNzkJ" jucerFormatVersion="1">
-  <MAINGROUP id="tmUIre" name="GainPlugin">
+  <MAINGROUP id="tmUIre" name="TremoloPlugin">
     <GROUP id="{C8C481F9-A254-1E9B-C57E-5C90EA9AAE3B}" name="Source">
       <FILE id="eK6tyJ" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
       <FILE id="VmXOr1" name="TremoloPlugin.h" compile="0" resource="0" file="Source/TremoloPlugin.h"/>
@@ -29,8 +29,8 @@
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="GainPlugin"/>
-        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="GainPlugin"/>
+        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="TremoloPlugin"/>
+        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="TremoloPlugin"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path=""/>
@@ -49,8 +49,8 @@
     </XCODE_MAC>
     <VS2022 targetFolder="Builds/VisualStudio2022" extraCompilerFlags="/bigobj">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="GainPlugin"/>
-        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="GainPlugin"/>
+        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="TremoloPlugin"/>
+        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="TremoloPlugin"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path=""/>
