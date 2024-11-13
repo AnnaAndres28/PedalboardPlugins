@@ -71,7 +71,7 @@ public:
     //==============================================================================
     void prepareToPlay (double, int) override
     {  
-        position = 0; // Initial value for sample position within LFO signal
+        position = 0; // Initial value for position within LFO signal
     }
     
     void releaseResources() override {}
@@ -84,7 +84,9 @@ public:
         
         sampleRate = this->getSampleRate();
         totalNumInputChannels  = getTotalNumInputChannels();
-        LFO = sin(position * 6.2831853 * rateFloat / sampleRate);
+        
+        w = 6.28318530718 * rate / sampleRate;
+        LFO = sin(position * w);
     
         for (int channel = 0; channel < totalNumInputChannels; ++channel)
         {
@@ -95,8 +97,8 @@ public:
                 channelData[i] = channelData[i] * (depthFloat * LFO + (1.0f - depthFloat)); // Tremolo
                 channelData[i] *= gainFloat; // Gain
                 
-                position += 1;
-                if (position >= (sampleRate / rateFloat)) // Check if position is beyond number of samples in one LFO cycle
+                position += (1 / sampleRate); // Increment position by sampling interval
+                if (position >= (1 / rateFloat)) // Check if position is beyond one LFO period
                 {
                     position = 0;
                 }
@@ -112,7 +114,9 @@ public:
         
         sampleRate = this->getSampleRate();
         totalNumInputChannels  = getTotalNumInputChannels();
-        LFO = sin(position * 6.2831853 * rateFloat / sampleRate);
+        
+        w = 6.28318530718 * rate / sampleRate;
+        LFO = sin(position * w);
     
         for (int channel = 0; channel < totalNumInputChannels; ++channel)
         {
@@ -123,8 +127,8 @@ public:
                 channelData[i] = channelData[i] * (depthFloat * LFO + (1.0f - depthFloat)); // Tremolo
                 channelData[i] *= gainFloat; // Gain
                 
-                position += 1;
-                if (position >= (sampleRate / rateFloat)) // Check if position is beyond number of samples in one LFO cycle
+                position += (1 / sampleRate); // Increment position by sampling interval
+                if (position >= (1 / rateFloat)) // Check if position is beyond one LFO period
                 {
                     position = 0;
                 }
@@ -181,7 +185,8 @@ private:
     
     double sampleRate;
     int totalNumInputChannels;
-    int position; // Current sample position within LFO signal
+    int position; // Current position within LFO signal
+    float w; // w is in radians per sample
     float LFO; // Low-frequency oscillator
 
     //==============================================================================
