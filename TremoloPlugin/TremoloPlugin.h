@@ -96,7 +96,7 @@ public:
                 channelData[i] *= gainFloat; // Gain
                 
                 position += 1;
-                if (position >= (6.2831853 / w)) // Check if position is beyond number of samples in one LFO cycle
+                if (position >= (sampleRate / rateFloat)) // Check if position is beyond number of samples in one LFO cycle
                 {
                     position = 0;
                 }
@@ -124,7 +124,7 @@ public:
                 channelData[i] *= gainFloat; // Gain
                 
                 position += 1;
-                if (position >= (6.2831853 / w)) // Check if position is beyond number of samples in one LFO cycle
+                if (position >= (sampleRate / rateFloat)) // Check if position is beyond number of samples in one LFO cycle
                 {
                     position = 0;
                 }
