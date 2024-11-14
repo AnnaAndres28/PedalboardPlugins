@@ -65,7 +65,7 @@ public:
     {
         addParameter (rate = new AudioParameterFloat ({"rate", 1}, "Rate", 0.0f, 20.0f, 10.0f)); // rate is in Hz
         addParameter (depth = new AudioParameterFloat ({"depth", 1}, "Depth", 0.0f, 1.0f, 0.5f));
-        addParameter (gain = new AudioParameterFloat ({"gain", 1}, "Gain", 0.0f, 1.0f, 1.0f));
+        addParameter (gain = new AudioParameterFloat ({"gain", 1}, "Gain", 0.0f, 2.0f, 1.0f));
     }
 
     //==============================================================================
