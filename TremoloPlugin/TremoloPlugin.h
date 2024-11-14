@@ -85,7 +85,7 @@ public:
         sampleRate = this->getSampleRate();
         totalNumInputChannels  = getTotalNumInputChannels();
         
-        w = 6.28318530718 * rateFloat;//w = 6.28318530718 * rateFloat / sampleRate;
+        w = 6.28318530718 * rateFloat;
         LFO = sin(position * w);
     
         for (int channel = 0; channel < totalNumInputChannels; ++channel)
@@ -115,7 +115,7 @@ public:
         sampleRate = this->getSampleRate();
         totalNumInputChannels  = getTotalNumInputChannels();
         
-        w = 6.28318530718 * rateFloat;//w = 6.28318530718 * rateFloat / sampleRate;
+        w = 6.28318530718 * rateFloat;
         LFO = sin(position * w);
     
         for (int channel = 0; channel < totalNumInputChannels; ++channel)
