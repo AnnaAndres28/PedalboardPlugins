@@ -226,7 +226,7 @@ private:
     int totalNumInputChannels;
     float position1; // Current position within LFO signal for channel 1
     float position2; // Current position within LFO signal for channel 2
-    float w; // w is in radians per sample
+    float w; // w is in radians per second
     float LFO; // Low-frequency oscillator
 
     //==============================================================================
