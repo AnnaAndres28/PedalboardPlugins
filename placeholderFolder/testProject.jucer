@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="cyuQVy" name="testProject" projectType="audioplug"
+<JUCERPROJECT id="cyuQVy" name="testProject" version="1.0.0" companyWebsite="http://juce.com"
+              defines="PIP_JUCE_EXAMPLES_DIRECTORY=L2hvbWUvaGVpbnR6L0pVQ0UvZXhhbXBsZXM="
+              projectType="audioplug" pluginAUIsSandboxSafe="1" pluginManufacturer="JUCE"
               pluginFormats="buildVST3,buildAU,buildStandalone" useAppConfig="0"
               addUsingNamespaceToJuceHeader="1" jucerFormatVersion="1">
   <MAINGROUP id="WqTW6y" name="testProject">
