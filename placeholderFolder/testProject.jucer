@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="cyuQVy" name="testProject" projectType="audioplug" useAppConfig="0"
+<JUCERPROJECT id="cyuQVy" name="testProject" projectType="audioplug"
+              pluginFormats="buildVST3,buildAU,buildStandalone" useAppConfig="0"
               addUsingNamespaceToJuceHeader="1" jucerFormatVersion="1">
   <MAINGROUP id="WqTW6y" name="testProject">
     <GROUP id="{EFBB1758-01BD-C0CB-650C-AC23015C313E}" name="Source">
