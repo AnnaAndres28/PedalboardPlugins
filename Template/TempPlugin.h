@@ -22,19 +22,19 @@
 
 
 //==============================================================================
-class TempProcessor final : public AudioProcessor
+class TempProcessor final : public juce::AudioProcessor
 {
 public:
 
     //==============================================================================
     // Constructor that lets you define input/output channels as well as parameters and their bounds
     TempProcessor()
-        : AudioProcessor (BusesProperties().withInput  ("Input",  AudioChannelSet::stereo())
-                                           .withOutput ("Output", AudioChannelSet::stereo()))
+        : juce::AudioProcessor (BusesProperties().withInput  ("Input",  juce::AudioChannelSet::stereo())
+                                           .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
         // TODO: Add your parameters here. This allows you to assign min, max, and default parameters (respectively) for each parameter
 	// Example: 
-	// addParameter (gain = new AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 2.0f, 0.5f));
+	// addParameter (gain = new juce::AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 2.0f, 0.5f));
     }
 
     //==============================================================================
@@ -44,7 +44,7 @@ public:
     void releaseResources() override {}
 
     // This is where all the audio processing happens. One block of audio input is handled at a time.
-    void processBlock (AudioBuffer<float>& buffer, MidiBuffer&) override
+    void processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override
     {
         // TODO: Read the value for your parameters in from the GUI using get()
 	// Example:
@@ -74,7 +74,7 @@ public:
         }
     }
 
-    void processBlock (AudioBuffer<double>& buffer, MidiBuffer&) override
+    void processBlock (juce::AudioBuffer<double>& buffer, juce::MidiBuffer&) override
     {
 	    // TODO: Copy and paste all of the code from the previous process block into this process block
     }
@@ -82,13 +82,13 @@ public:
     //==============================================================================
     // DO NOT CHANGE ANY OF THESE
     // This creates the GUI editor for the plugin
-    AudioProcessorEditor* createEditor() override          { return new GenericAudioProcessorEditor (*this); }
+    juce::AudioProcessorEditor* createEditor() override          { return new juce::GenericAudioProcessorEditor (*this); }
     // We have a GUI editor for the plugin so we return true
     bool hasEditor() const override                        { return true;   }
 
     //==============================================================================
     // TODO: Change the return string to be what you want the plugin name to be
-    const String getName() const override                  { return "TEMPLATE PlugIn"; }
+    const juce::String getName() const override                  { return "TEMPLATE PlugIn"; }
     // This function returns a boolean for whether or not the plugin accepts Midi input. We don't. so this will be false
     bool acceptsMidi() const override                      { return false; }
     // This function returns a boolean for whether or not the plugin has Midi output. We don't. so this will be false
@@ -106,18 +106,18 @@ public:
     // This allows the user to switch to a different program if you have multiple
     void setCurrentProgram (int) override                  {}
     // This gives you the name of the program for a given index
-    const String getProgramName (int) override             { return "None"; }
+    const juce::String getProgramName (int) override             { return "None"; }
     // This allows you to change the name of a program at the given index
-    void changeProgramName (int, const String&) override   {}
+    void changeProgramName (int, const juce::String&) override   {}
 
     //==============================================================================
     // This function saves the current state of each parameter to memory so that we can load the state of each parameter 
     // in the next session of running the pedal
     // TODO: Save the value of your parameter to memory. Make sure you do this for every one of your parameters.
-    void getStateInformation (MemoryBlock& destData) override
+    void getStateInformation (juce::MemoryBlock& destData) override
     {
 	// Example: 
-	// MemoryOutputStream (destData, true).writeFloat (*gain);
+	// juce::MemoryOutputStream (destData, true).writeFloat (*gain);
     }
 
     // This function recalls the state of the parameters from the last session ran and restores it into the parameter
@@ -125,7 +125,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override
     {
         // Example:
-	// gain->setValueNotifyingHost (MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
+	// gain->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
     }
 
     //==============================================================================
@@ -143,7 +143,7 @@ private:
     //==============================================================================
     // TODO: This is where you define your audio parameters from the GUI that your code relies on in the process block. You can also define other variables here.
     // Example:
-    // AudioParameterFloat* gain;
+    // juce::AudioParameterFloat* gain;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GainProcessor)
