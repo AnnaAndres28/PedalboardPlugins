@@ -54,14 +54,14 @@
 
 
 //==============================================================================
-class PassThruProcessor final : public AudioProcessor
+class PassThruProcessor final : public juce::AudioProcessor
 {
 public:
 
     //==============================================================================
     PassThruProcessor()
-        : AudioProcessor (BusesProperties().withInput  ("Input",  AudioChannelSet::stereo())
-                                           .withOutput ("Output", AudioChannelSet::stereo()))
+        : juce::AudioProcessor (BusesProperties().withInput  ("Input",  juce::AudioChannelSet::stereo())
+                                                 .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
     }
 
@@ -69,20 +69,20 @@ public:
     void prepareToPlay (double, int) override {}
     void releaseResources() override {}
 
-    void processBlock (AudioBuffer<float>& buffer, MidiBuffer&) override
+    void processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override
     {
     }
 
-    void processBlock (AudioBuffer<double>& buffer, MidiBuffer&) override
+    void processBlock (juce::AudioBuffer<double>& buffer, juce::MidiBuffer&) override
     {
     }
 
     //==============================================================================
-    AudioProcessorEditor* createEditor() override          { return new GenericAudioProcessorEditor (*this); }
+    juce::AudioProcessorEditor* createEditor() override          { return new juce::GenericAudioProcessorEditor (*this); }
     bool hasEditor() const override                        { return true;   }
 
     //==============================================================================
-    const String getName() const override                  { return "Pass Thru Plugin"; }
+    const juce::String getName() const override                  { return "Pass Thru Plugin"; }
     bool acceptsMidi() const override                      { return false; }
     bool producesMidi() const override                     { return false; }
     double getTailLengthSeconds() const override           { return 0; }
@@ -91,11 +91,11 @@ public:
     int getNumPrograms() override                          { return 1; }
     int getCurrentProgram() override                       { return 0; }
     void setCurrentProgram (int) override                  {}
-    const String getProgramName (int) override             { return "None"; }
-    void changeProgramName (int, const String&) override   {}
+    const juce::String getProgramName (int) override             { return "None"; }
+    void changeProgramName (int, const juce::String&) override   {}
 
     //==============================================================================
-    void getStateInformation (MemoryBlock& destData) override
+    void getStateInformation (juce::MemoryBlock& destData) override
     {
     }
 
