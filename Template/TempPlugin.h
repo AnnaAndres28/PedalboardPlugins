@@ -5,7 +5,7 @@
  vendor:           JUCE
  website:          https://oshe.io
  description:      TEMPLATE audio plugin.
- lastUpdated:	   Nov 12 2024 by Anna Andres
+ lastUpdated:	   Jan 20 2025 by Anna Andres
 
  dependencies:     juce_audio_basics, juce_audio_devices, juce_audio_formats,
                    juce_audio_plugin_client, juce_audio_processors,
