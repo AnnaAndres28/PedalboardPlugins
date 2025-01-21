@@ -74,11 +74,6 @@ public:
         }
     }
 
-    void processBlock (juce::AudioBuffer<double>& buffer, juce::MidiBuffer&) override
-    {
-	    // TODO: Copy and paste all of the code from the previous process block into this process block
-    }
-
     //==============================================================================
     // DO NOT CHANGE ANY OF THESE
     // This creates the GUI editor for the plugin
