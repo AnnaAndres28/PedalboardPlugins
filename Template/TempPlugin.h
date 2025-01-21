@@ -55,18 +55,8 @@ public:
             auto* channelData = buffer.getWritePointer(channel);
             for (int sample = 0; sample < buffer.getNumSamples(); ++sample) 
             {
-                float processedSample = channelData[sample] * gainValue; // applying gain
-                //processedSample = std::tanh(gainValue * processedSample);
-                
-                // applying hard clipping
-                if (processedSample > clipThreshold) 
-                {
-                    processedSample = clipThreshold;
-                } 
-                else if (processedSample < -clipThreshold) 
-                {
-                    processedSample = -clipThreshold;
-                }
+		// TODO: process the audio sample-by-sample here
+                float processedSample = channelData[sample] * gainValue;
                 
                 // write processed sample back to buffer
                 channelData[sample] = processedSample;
