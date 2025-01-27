@@ -1,29 +1,20 @@
 /*******************************************************************************
- The block below describes the properties of this PIP. A PIP is a short snippet
- of code that can be read by the Projucer and used to generate a JUCE project.
-
- BEGIN_JUCE_PIP_METADATA
 
  name:             TremoloPlugin
  version:          1.0.0
  vendor:           JUCE
- website:          http://juce.com
- description:      Tremolo audio plugin.
+ website:          https://oshe.io
+ description:      TEMPLATE audio plugin.
+ lastUpdated:	     Jan __ 2025 by ____
 
  dependencies:     juce_audio_basics, juce_audio_devices, juce_audio_formats,
                    juce_audio_plugin_client, juce_audio_processors,
                    juce_audio_utils, juce_core, juce_data_structures,
                    juce_events, juce_graphics, juce_gui_basics, juce_gui_extra
- exporters:        xcode_mac, vs2022
-
- moduleFlags:      JUCE_STRICT_REFCOUNTEDPOINTER=1
+ exporters:        linux makefile
 
  type:             AudioProcessor
  mainClass:        TremoloProcessor
-
- useLocalCopy:     1
-
- END_JUCE_PIP_METADATA
 
 *******************************************************************************/
 
