@@ -5,7 +5,7 @@
  vendor:           JUCE
  website:          https://oshe.io
  description:      envelope follower audio plugin.
- lastUpdated:	     Jan 27 2025 by Anna Andres
+ lastUpdated:	   Feb 7 2025 by Anna Andres
 
  dependencies:     juce_audio_basics, juce_audio_devices, juce_audio_formats,
                    juce_audio_plugin_client, juce_audio_processors,
@@ -35,6 +35,8 @@ public:
         // TODO: Add your parameters here. This allows you to assign min, max, and default parameters (respectively) for each parameter
 	// Example: 
 	// addParameter (gain = new juce::AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 2.0f, 0.5f));
+	addParameter (attack = new juce::AudioParameterFloat ({ "attack", 1 }, "Attack", 0.0f, 1.0f, 0.5f));
+	addParameter (release = new juce::AudioParameterFloat ({ "release", 1 }, "Release", 0.0f, 1.0f, 0.5f));
     }
 
     //==============================================================================
@@ -49,6 +51,12 @@ public:
         // TODO: Read the value for your parameters in from the GUI using get()
 	// Example:
 	// auto gainValue = gain->get();
+	auto attackValue = attack->get();
+	auto releaseValue = release->get();
+
+	float attackStrength = pow( 0.01, 1.0 / ( attackValue * getSampleRate() * 0.001 ) );
+	float releaseStrength = pow( 0.01, 1.0 / ( releaseValue * getSampleRate() * 0.001 ) );
+	float envelope = 0;
         
         for (int channel = 0; channel < buffer.getNumChannels(); ++channel) 
         {
@@ -56,10 +64,15 @@ public:
             for (int sample = 0; sample < buffer.getNumSamples(); ++sample) 
             {
 		// TODO: process the audio sample-by-sample here
-                float processedSample = channelData[sample] * gainValue;
-                
+                //float processedSample = channelData[sample] * gain;
+		float inputEnvelope = fabsf(channelData[sample]);
+		if (inputEnvelope > envelope)
+			evenlope = attackStrength * envelope + (1 - attackStrength) * inputEnvelope;
+		    else
+			evenlope = releaseStrength * envelope + (1 - releaseStrength) * inputEnvelope;
+		    
                 // write processed sample back to buffer
-                channelData[sample] = processedSample;
+                channelData[sample] = envelope;
             }
         }
     }
@@ -103,6 +116,8 @@ public:
     {
 	// Example: 
 	// juce::MemoryOutputStream (destData, true).writeFloat (*gain);
+	juce::MemoryOutputStream (destData, true).writeFloat (*attack);
+	juce::MemoryOutputStream (destData, true).writeFloat (*release);
     }
 
     // This function recalls the state of the parameters from the last session ran and restores it into the parameter
@@ -111,6 +126,8 @@ public:
     {
         // Example:
 	// gain->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
+	attack->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
+	release->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
     }
 
     //==============================================================================
@@ -129,6 +146,8 @@ private:
     // TODO: This is where you define your audio parameters from the GUI that your code relies on in the process block. You can also define other variables here.
     // Example:
     // juce::AudioParameterFloat* gain;
+    juce::AudioParameterFloat* attack;
+    juce::AudioParameterFloat* release;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EnvelopeProcessor)
