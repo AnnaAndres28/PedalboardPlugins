@@ -35,8 +35,8 @@ public:
         // TODO: Add your parameters here. This allows you to assign min, max, and default parameters (respectively) for each parameter
 	// Example: 
 	// addParameter (gain = new juce::AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 2.0f, 0.5f));
-	addParameter (attack = new juce::AudioParameterFloat ({ "attack", 1 }, "Attack", 0.0f, 1.0f, 0.5f));
-	addParameter (release = new juce::AudioParameterFloat ({ "release", 1 }, "Release", 0.0f, 1.0f, 0.5f));
+	addParameter (attack = new juce::AudioParameterFloat ({ "attack", 1 }, "Attack", 0.0f, 100.0f, 50.0f));
+	addParameter (release = new juce::AudioParameterFloat ({ "release", 1 }, "Release", 0.0f, 100.0f, 50.0f));
     }
 
     //==============================================================================
