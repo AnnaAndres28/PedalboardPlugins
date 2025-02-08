@@ -67,9 +67,9 @@ public:
                 //float processedSample = channelData[sample] * gain;
 		float inputEnvelope = fabsf(channelData[sample]);
 		if (inputEnvelope > envelope)
-			evenlope = attackStrength * envelope + (1 - attackStrength) * inputEnvelope;
+			envelope = attackStrength * envelope + (1 - attackStrength) * inputEnvelope;
 		    else
-			evenlope = releaseStrength * envelope + (1 - releaseStrength) * inputEnvelope;
+			envelope = releaseStrength * envelope + (1 - releaseStrength) * inputEnvelope;
 		    
                 // write processed sample back to buffer
                 channelData[sample] = envelope;
