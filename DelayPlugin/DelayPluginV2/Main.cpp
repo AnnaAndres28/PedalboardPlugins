@@ -1,6 +1,6 @@
 #include <JuceHeader.h>
 //#include <juce_DelayLine.h>
-#include "DelayPluginV1.h" //make sure to update this for each new version!
+#include "DelayPluginV2.h" //make sure to update this for each new version!
 
 //==============================================================================
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
