@@ -4,7 +4,7 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
   <MAINGROUP id="TOMkFg" name="DelayPlugin">
     <GROUP id="{76AC5F42-80EF-8DFF-61CE-B042ADCA7AF9}" name="Source">
-      <FILE id="JrLBly" name="DelayPluginV1.h" compile="0" resource="0" file="Source/DelayPluginV1.h"/>
+      <FILE id="JrLBly" name="DelayPluginV2.h" compile="0" resource="0" file="Source/DelayPluginV2.h"/>
       <FILE id="gGaZwX" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
     </GROUP>
   </MAINGROUP>
