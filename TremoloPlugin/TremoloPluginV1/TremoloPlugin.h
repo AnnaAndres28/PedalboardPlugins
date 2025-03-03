@@ -190,7 +190,7 @@ private:
     double sampleRate;
     int totalNumInputChannels;
     float position; // Current position within LFO signal
-    float w; // w is in radians per sample
+    float w; // w is in radians per second
     float LFO; // Low-frequency oscillator
 
     //==============================================================================
