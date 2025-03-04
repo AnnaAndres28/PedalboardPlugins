@@ -34,15 +34,23 @@ public:
     {
         // adding attack, release, threshold, and ratio parameters as well as their bounds
 	// TODO: mess around with ranges and add comments on why these ranges were selected
-	addParameter (attack = new juce::AudioParameterFloat ({ "attack", 1 }, "Attack", 0.0f, 30.0f, 5f));
-	addParameter (release = new juce::AudioParameterFloat ({ "release", 1 }, "Release", 50.0f, 300.0f, 0.5f));
-	addParameter (threshold = new juce::AudioParameterFloat ({ "threshold", 1 }, "Threshold", -50.0f, 5.0f, 0.0f)); //youtube does -48.0 to 
+	addParameter (attack = new juce::AudioParameterFloat ({ "attack", 1 }, "Attack", 0.0f, 30.0f, 5.0f));
+	addParameter (release = new juce::AudioParameterFloat ({ "release", 1 }, "Release", 50.0f, 300.0f, 100.0f));
+	addParameter (threshold = new juce::AudioParameterFloat ({ "threshold", 1 }, "Threshold", -50.0f, 5.0f, -20.0f)); 
 	addParameter (ratio = new juce::AudioParameterFloat ({ "ratio", 1 }, "Ratio", 1.0f, 20.0f, 3.0f));
     }
 
     //==============================================================================
     // This function is used before audio processing. It lets you initialize variables and set up any other resources prior to running the plugin
-    void prepareToPlay (double, int) override {}
+    void prepareToPlay (double samplerate, int samplesPerBlock) override 
+    {
+	juce::dsp::ProcessSpec spec { sampleRate, static_cast<uint32>(samplesPerBlock), getTotalNumOutputChannels() };
+	compressor.prepare(spec);
+	compressor.setAttack(5.0f);
+	compressor.setRelease(100.0f);
+	compressor.setThreshold(-20.0f);
+	compressor.setRatio(3.0f);
+    }
     // This function is usually called after the plugin stops taking in audio. It can deallocate any memory used and clean out buffers
     void releaseResources() override {}
 
@@ -51,27 +59,30 @@ public:
     {
         juce::dsp::AudioBlock<float> block (buffer);
 	juce::dsp::ProcessContextReplacing<float> context (block);
-
-	
 	
 	// read the values of the parameters in from the GUI
 	auto attackValue = attack->get();
 	auto releaseValue = release->get();
 	auto thresholdValue = threshold->get();
 	auto ratioValue = ratio->get();
+
+	compressor.setAttack(attackValue);
+	compressor.setRelease(areleaseValue);
+	compressor.setThreshold(thresholdValue);
+	compressor.setRatio(ratioValue);
         
-        for (int channel = 0; channel < buffer.getNumChannels(); ++channel) 
-        {
-            auto* channelData = buffer.getWritePointer(channel);
-            for (int sample = 0; sample < buffer.getNumSamples(); ++sample) 
-            {
+        //for (int channel = 0; channel < buffer.getNumChannels(); ++channel) 
+      //  {
+       //     auto* channelData = buffer.getWritePointer(channel);
+       //     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) 
+       //     {
 		// TODO: process the audio sample-by-sample here
-                float processedSample = channelData[sample] * gainValue;
+        //        float processedSample = channelData[sample] * gainValue;
                 
                 // write processed sample back to buffer
-                channelData[sample] = processedSample;
-            }
-        }
+        //        channelData[sample] = processedSample;
+        //    }
+        //}
     }
 
     //==============================================================================
@@ -135,6 +146,7 @@ public:
 
 private:
     //==============================================================================
+    juce::dsp::Compressor<float> compressor;
     // TODO: This is where you define your audio parameters from the GUI that your code relies on in the process block. You can also define other variables here.
     // Example:
     juce::AudioParameterFloat* attack;
