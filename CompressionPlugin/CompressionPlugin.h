@@ -1,11 +1,11 @@
 /*******************************************************************************
 
- name:             CompressionPlugin
+ name:             CompressorPlugin
  version:          1.0.0
  vendor:           JUCE
  website:          https://oshe.io
- description:      compression audio plugin.
- lastUpdated:	   March 4 2025 by Anna Andres
+ description:      compressor audio plugin.
+ lastUpdated:	   March 17 2025 by Anna Andres
 
  dependencies:     juce_audio_basics, juce_audio_devices, juce_audio_formats,
                    juce_audio_plugin_client, juce_audio_processors, juce_dsp,
@@ -14,7 +14,7 @@
  exporters:        linux makefile
 
  type:             AudioProcessor
- mainClass:        CompressionProcessor
+ mainClass:        CompressorProcessor
 
 *******************************************************************************/
 
@@ -22,35 +22,36 @@
 
 
 //==============================================================================
-class CompressionProcessor final : public juce::AudioProcessor
+class CompressorProcessor final : public juce::AudioProcessor
 {
 public:
 
     //==============================================================================
     // Constructor that lets you define input/output channels as well as parameters and their bounds
-    CompressionProcessor()
+    CompressorProcessor()
         : juce::AudioProcessor (BusesProperties().withInput  ("Input",  juce::AudioChannelSet::stereo())
                                            .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
-        // adding attack, release, threshold, and ratio parameters as well as their bounds
-	// TODO: mess around with ranges and add comments on why these ranges were selected
-	addParameter (attack = new juce::AudioParameterFloat ({ "attack", 1 }, "Attack", 0.0f, 30.0f, 5.0f));
-	addParameter (release = new juce::AudioParameterFloat ({ "release", 1 }, "Release", 50.0f, 300.0f, 100.0f));
-	addParameter (threshold = new juce::AudioParameterFloat ({ "threshold", 1 }, "Threshold", -50.0f, 5.0f, -20.0f)); 
-	addParameter (ratio = new juce::AudioParameterFloat ({ "ratio", 1 }, "Ratio", 1.0f, 20.0f, 3.0f));
+        // adding parameters as well as their bounds
+	    addParameter (attack = new juce::AudioParameterFloat ({ "attack", 1 }, "Attack", 0.0f, 30.0f, 5.0f));
+	    addParameter (release = new juce::AudioParameterFloat ({ "release", 1 }, "Release", 50.0f, 300.0f, 100.0f));
+	    addParameter (threshold = new juce::AudioParameterFloat ({ "threshold", 1 }, "Threshold", -50.0f, 5.0f, -20.0f)); 
+	    addParameter (ratio = new juce::AudioParameterFloat ({ "ratio", 1 }, "Ratio", 1.0f, 20.0f, 3.0f));
     }
 
     //==============================================================================
     // This function is used before audio processing. It lets you initialize variables and set up any other resources prior to running the plugin
     void prepareToPlay (double samplerate, int samplesPerBlock) override 
     {
-	juce::dsp::ProcessSpec spec { sampleRate, static_cast<uint32>(samplesPerBlock), getTotalNumOutputChannels() };
-	compressor.prepare(spec);
-	compressor.setAttack(5.0f);
-	compressor.setRelease(100.0f);
-	compressor.setThreshold(-20.0f);
-	compressor.setRatio(3.0f);
+	    // initialize the processor and set initial parameter values
+        juce::dsp::ProcessSpec spec { samplerate, static_cast<uint32_t>(samplesPerBlock), static_cast<uint32_t>(getTotalNumOutputChannels()) };
+	    compressor.prepare(spec);
+	    compressor.setAttack(5.0f);
+	    compressor.setRelease(100.0f);
+	    compressor.setThreshold(-20.0f);
+	    compressor.setRatio(3.0f);
     }
+    
     // This function is usually called after the plugin stops taking in audio. It can deallocate any memory used and clean out buffers
     void releaseResources() override {}
 
@@ -58,48 +59,35 @@ public:
     void processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override
     {
         juce::dsp::AudioBlock<float> block (buffer);
-	juce::dsp::ProcessContextReplacing<float> context (block);
+	    juce::dsp::ProcessContextReplacing<float> context (block);
 	
-	// read the values of the parameters in from the GUI
-	auto attackValue = attack->get();
-	auto releaseValue = release->get();
-	auto thresholdValue = threshold->get();
-	auto ratioValue = ratio->get();
+	    // read the values of the parameters in from the GUI
+	    auto attackValue = attack->get();
+	    auto releaseValue = release->get();
+	    auto thresholdValue = threshold->get();
+	    auto ratioValue = ratio->get();
 
-	compressor.setAttack(attackValue);
-	compressor.setRelease(areleaseValue);
-	compressor.setThreshold(thresholdValue);
-	compressor.setRatio(ratioValue);
-        
-        //for (int channel = 0; channel < buffer.getNumChannels(); ++channel) 
-      //  {
-       //     auto* channelData = buffer.getWritePointer(channel);
-       //     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) 
-       //     {
-		// TODO: process the audio sample-by-sample here
-        //        float processedSample = channelData[sample] * gainValue;
-                
-                // write processed sample back to buffer
-        //        channelData[sample] = processedSample;
-        //    }
-        //}
+	    // update parameters and apply them to the audio block with process()
+	    compressor.setAttack(attackValue);
+	    compressor.setRelease(releaseValue);
+	    compressor.setThreshold(thresholdValue);
+	    compressor.setRatio(ratioValue);
+	    compressor.process(context);
     }
 
     //==============================================================================
-    // DO NOT CHANGE ANY OF THESE
     // This creates the GUI editor for the plugin
     juce::AudioProcessorEditor* createEditor() override          { return new juce::GenericAudioProcessorEditor (*this); }
     // We have a GUI editor for the plugin so we return true
     bool hasEditor() const override                        { return true;   }
 
     //==============================================================================
-    const juce::String getName() const override                  { return "Compression PlugIn"; }
+    const juce::String getName() const override            { return "Compressor PlugIn"; }
     bool acceptsMidi() const override                      { return false; }
     bool producesMidi() const override                     { return false; }
     double getTailLengthSeconds() const override           { return 0; }
 
     //==============================================================================
-    // DO NOT CHANGE ANY OF THESE
     // This returns the number of presets/configurations for the plugin. We only have a default configuration so we return 1
     int getNumPrograms() override                          { return 1; }
     // This returns the index of the currently selected program. This will always be 0 for this plugin
@@ -114,28 +102,25 @@ public:
     //==============================================================================
     // This function saves the current state of each parameter to memory so that we can load the state of each parameter 
     // in the next session of running the pedal
-    // TODO: Save the value of your parameter to memory. Make sure you do this for every one of your parameters.
     void getStateInformation (juce::MemoryBlock& destData) override
     {
-	juce::MemoryOutputStream (destData, true).writeFloat (*attack);
-	juce::MemoryOutputStream (destData, true).writeFloat (*release);
-	juce::MemoryOutputStream (destData, true).writeFloat (*threshold);
-	juce::MemoryOutputStream (destData, true).writeFloat (*ratio);
+	    juce::MemoryOutputStream (destData, true).writeFloat (*attack);
+	    juce::MemoryOutputStream (destData, true).writeFloat (*release);
+	    juce::MemoryOutputStream (destData, true).writeFloat (*threshold);
+	    juce::MemoryOutputStream (destData, true).writeFloat (*ratio);
     }
 
     // This function recalls the state of the parameters from the last session ran and restores it into the parameter
-    // TODO: Read the value into your parameter from memory. Make sure you do this for every one of your parameters.
     void setStateInformation (const void* data, int sizeInBytes) override
     {
-	attack->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-	release->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-	threshold->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-	ratio->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
+	    attack->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
+	    release->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
+	    threshold->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
+	    ratio->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
     }
 
     //==============================================================================
     // This function checks to see if the requested input/output configuration is compatible with the coded plugin
-    // DO NOT CHANGE THIS FUNCTION
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override
     {
         const auto& mainInLayout  = layouts.getChannelSet (true,  0);
@@ -147,13 +132,11 @@ public:
 private:
     //==============================================================================
     juce::dsp::Compressor<float> compressor;
-    // TODO: This is where you define your audio parameters from the GUI that your code relies on in the process block. You can also define other variables here.
-    // Example:
-    juce::AudioParameterFloat* attack;
-    juce::AudioParameterFloat* release;
-    juce::AudioParameterFloat* threshold;
-    juce::AudioParameterFloat* ratio;
+    juce::AudioParameterFloat* attack; //the attack time in milliseconds of the compressor
+    juce::AudioParameterFloat* release; //the release time in milliseconds of the compressor
+    juce::AudioParameterFloat* threshold; //the threshold in dB of the compressor
+    juce::AudioParameterFloat* ratio; //the ratio of the compressor (must be higher or equal to 1)
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CompressionProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CompressorProcessor)
 };
