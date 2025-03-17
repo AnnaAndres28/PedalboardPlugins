@@ -32,7 +32,7 @@ public:
         : juce::AudioProcessor (BusesProperties().withInput  ("Input",  juce::AudioChannelSet::stereo())
                                            .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
-        // adding attack, release, threshold, and ratio parameters as well as their bounds
+        // adding parameters as well as their bounds
 	    addParameter (rate = new juce::AudioParameterFloat ({ "rate", 1 }, "Rate", 0.0f, 100.0f, 50.0f));
 	    addParameter (depth = new juce::AudioParameterFloat ({ "depth", 1 }, "Depth", 0.0f, 1.0f, 0.5f));
 	    addParameter (centreFreq = new juce::AudioParameterFloat ({ "centreFreq", 1 }, "Centre Frequency", 0.0f, 100.0f, 50.0f)); 
@@ -44,6 +44,7 @@ public:
     // This function is used before audio processing. It lets you initialize variables and set up any other resources prior to running the plugin
     void prepareToPlay (double samplerate, int samplesPerBlock) override 
     {
+        // initialize the processor and set initial parameter values
 	    juce::dsp::ProcessSpec spec { samplerate, static_cast<uint32_t>(samplesPerBlock), static_cast<uint32_t>(getTotalNumOutputChannels()) };
 	    phaser.prepare(spec);
 	    phaser.setRate(50.0f);
@@ -58,7 +59,7 @@ public:
     // This is where all the audio processing happens. One block of audio input is handled at a time.
     void processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override
     {
-	juce::dsp::AudioBlock<float> block (buffer);
+        juce::dsp::AudioBlock<float> block (buffer);
 	    juce::dsp::ProcessContextReplacing<float> context (block);
 	
 	    // read the values of the parameters in from the GUI
@@ -104,7 +105,6 @@ public:
     //==============================================================================
     // This function saves the current state of each parameter to memory so that we can load the state of each parameter 
     // in the next session of running the pedal
-    // TODO: Save the value of your parameter to memory. Make sure you do this for every one of your parameters.
     void getStateInformation (juce::MemoryBlock& destData) override
     {
 	    juce::MemoryOutputStream (destData, true).writeFloat (*rate);
@@ -137,11 +137,11 @@ public:
 private:
     //==============================================================================
     juce::dsp::Phaser<float> phaser;
-    juce::AudioParameterFloat* rate; //Sets the rate (in Hz) of the LFO modulating the phaser all-pass filters. Must be <100Hz
-    juce::AudioParameterFloat* depth; //Sets the volume (between 0 and 1) of the LFO modulating the phaser all-pass filters.
-    juce::AudioParameterFloat* centreFreq; //Sets the centre frequency (in Hz) of the phaser all-pass filters modulation.
-    juce::AudioParameterFloat* feedback; //Sets the feedback volume (between -1 and 1) of the phaser. Negative can be used to get specific phaser sounds.
-    juce::AudioParameterFloat* mix; //Sets the amount of dry and wet signal in the output of the phaser (between 0 for full dry and 1 for full wet).
+    juce::AudioParameterFloat* rate; //the rate (in Hz) of the LFO modulating the phaser all-pass filters. (Must be <100Hz)
+    juce::AudioParameterFloat* depth; //the volume (between 0 and 1) of the LFO modulating the phaser all-pass filters
+    juce::AudioParameterFloat* centreFreq; //the centre frequency (in Hz) of the phaser all-pass filters modulation
+    juce::AudioParameterFloat* feedback; //the feedback volume (between -1 and 1) of the phaser. (Negative can be used to get specific phaser sounds)
+    juce::AudioParameterFloat* mix; //the amount of dry and wet signal in the output of the phaser (between 0 for full dry and 1 for full wet)
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PhaserProcessor)
