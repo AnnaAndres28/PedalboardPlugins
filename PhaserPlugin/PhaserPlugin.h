@@ -33,10 +33,10 @@ public:
                                            .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
         // adding parameters as well as their bounds
-	    addParameter (rate = new juce::AudioParameterFloat ({ "rate", 1 }, "Rate", 0.0f, 100.0f, 50.0f));
-	    addParameter (depth = new juce::AudioParameterFloat ({ "depth", 1 }, "Depth", 0.0f, 1.0f, 0.5f));
-	    addParameter (centreFreq = new juce::AudioParameterFloat ({ "centreFreq", 1 }, "Centre Frequency", 0.0f, 100.0f, 50.0f)); 
-	    addParameter (feedback = new juce::AudioParameterFloat ({ "feedback", 1 }, "Feedback", -1.0f, 1.0f, 0.5f));
+	    addParameter (rate = new juce::AudioParameterFloat ({ "rate", 1 }, "Rate", 0.0f, 15.0f, 0.5f));
+	    addParameter (depth = new juce::AudioParameterFloat ({ "depth", 1 }, "Depth", 0.01f, 0.99f, 0.5f));
+	    addParameter (centreFreq = new juce::AudioParameterFloat ({ "centreFreq", 1 }, "Centre Frequency", 0.0f, 600.0f, 100.0f)); 
+	    addParameter (feedback = new juce::AudioParameterFloat ({ "feedback", 1 }, "Feedback", -0.99f, 0.99f, 0.0f));
 	    addParameter (mix = new juce::AudioParameterFloat ({ "mix", 1 }, "Mix", 0.0f, 1.0f, 0.5f));
     }
 
