@@ -127,7 +127,7 @@ public:
             {
                 for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
                 {
-                    lfoValue = (chnl1LFO.processSample(0.0f);
+                    lfoValue = chnl1LFO.processSample(0.0f);
                     delayInSamples = (lfoValue * delayFloat + delayFloat) * sampleRate;////might need to up the max delay in samples in prepare block to account for this eqn
                     delayLine.pushSample(channel, channelData[sample]);
                     float drySample = channelData[sample];
@@ -142,7 +142,7 @@ public:
             {
                 for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
                 {
-                    lfoValue = (chnl2LFO.processSample(0.0f);
+                    lfoValue = chnl2LFO.processSample(0.0f);
                     delayInSamples = (lfoValue * delayFloat + delayFloat) * sampleRate;
                     delayLine.pushSample(channel, channelData[sample]);
                     float drySample = channelData[sample];
