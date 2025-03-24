@@ -33,7 +33,7 @@ public:
                                            .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
         // adding parameters as well as their bounds
-	    addParameter (rate = new juce::AudioParameterFloat ({ "rate", 1 }, "Rate", 0.0f, 15.0f, 0.5f));
+	    addParameter (rate = new juce::AudioParameterFloat ({ "rate", 1 }, "Rate", 0.0f, 25.0f, 0.5f));
 	    addParameter (depth = new juce::AudioParameterFloat ({ "depth", 1 }, "Depth", 0.01f, 0.99f, 0.5f));
 	    addParameter (centreFreq = new juce::AudioParameterFloat ({ "centreFreq", 1 }, "Centre Frequency", 0.0f, 600.0f, 100.0f)); 
 	    addParameter (feedback = new juce::AudioParameterFloat ({ "feedback", 1 }, "Feedback", -0.99f, 0.99f, 0.0f));
@@ -47,10 +47,10 @@ public:
         // initialize the processor and set initial parameter values
 	    juce::dsp::ProcessSpec spec { samplerate, static_cast<uint32_t>(samplesPerBlock), static_cast<uint32_t>(getTotalNumOutputChannels()) };
 	    phaser.prepare(spec);
-	    phaser.setRate(50.0f);
+	    phaser.setRate(0.5f);
 	    phaser.setDepth(0.5f);
-	    phaser.setCentreFrequency(50.0f);
-	    phaser.setFeedback(0.5f);
+	    phaser.setCentreFrequency(100.0f);
+	    phaser.setFeedback(0.0f);
 	    phaser.setMix(0.5f);
     }
     // This function is usually called after the plugin stops taking in audio. It can deallocate any memory used and clean out buffers
