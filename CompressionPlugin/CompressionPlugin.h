@@ -33,10 +33,10 @@ public:
                                            .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
         // adding parameters as well as their bounds
-	    addParameter (attack = new juce::AudioParameterFloat ({ "attack", 1 }, "Attack", 0.0f, 30.0f, 5.0f));
-	    addParameter (release = new juce::AudioParameterFloat ({ "release", 1 }, "Release", 50.0f, 300.0f, 100.0f));
-	    addParameter (threshold = new juce::AudioParameterFloat ({ "threshold", 1 }, "Threshold", -50.0f, 5.0f, -20.0f)); 
-	    addParameter (ratio = new juce::AudioParameterFloat ({ "ratio", 1 }, "Ratio", 1.0f, 20.0f, 3.0f));
+	    addParameter (attack = new juce::AudioParameterFloat ({ "attack", 1 }, "Attack", 0.0f, 200.0f, 5.0f));
+	    addParameter (release = new juce::AudioParameterFloat ({ "release", 1 }, "Release", 0.0f, 500.0f, 100.0f));
+	    addParameter (threshold = new juce::AudioParameterFloat ({ "threshold", 1 }, "Threshold", -50.0f, 10.0f, -20.0f)); 
+	    addParameter (ratio = new juce::AudioParameterFloat ({ "ratio", 1 }, "Ratio", 1.0f, 30.0f, 3.0f));
     }
 
     //==============================================================================
