@@ -64,7 +64,7 @@ public:
                                                  .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
         addParameter (gain = new juce::AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 1.0f, 0.5f));
-        addParameter (delay = new juce::AudioParameterFloat ({ "delay", 1 }, "Delay", 0.0f, 1.0f, 0.2f)); // Delay is in seconds
+        addParameter (delay = new juce::AudioParameterFloat ({ "delay", 1 }, "Delay", 0.001f, 1.0f, 0.2f)); // Delay is in seconds
         addParameter (feedback = new juce::AudioParameterFloat ({ "feedback", 1 }, "Feedback", 0.0f, 1.0f, 0.2f));
         addParameter (mix = new juce::AudioParameterFloat ({ "mix", 1 }, "Mix", 0.0f, 1.0f, 0.5f));
     }
