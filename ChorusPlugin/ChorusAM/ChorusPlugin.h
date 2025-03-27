@@ -86,8 +86,8 @@ public:
         // Initializes delay processor
         delayLine.prepare (spec);
         
-        // Since the delay parameter is limited to a maximum of 1s, the maximum possible number of samples is sampleRate in samples/s * 1s
-        delayLine.setMaximumDelayInSamples (sampleRate);
+        // Since the delay parameter is limited to a maximum of 1s (which can be doubled in delayInSamples) the maximum possible number of samples is sampleRate in samples/s * 2s
+        delayLine.setMaximumDelayInSamples (sampleRate * 2);
       
         // Delay in seconds is converted to delay in samples
         delayLine.setDelay (delay->get() * sampleRate);
@@ -128,7 +128,7 @@ public:
                 for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
                 {
                     lfoValue = chnl1LFO.processSample(0.0f);
-                    delayInSamples = (lfoValue * delayFloat + delayFloat) * sampleRate;////might need to up the max delay in samples in prepare block to account for this eqn
+                    delayInSamples = (lfoValue * delayFloat + delayFloat) * sampleRate;
                     delayLine.pushSample(channel, channelData[sample]);
                     float drySample = channelData[sample];
                     float wetSample = delayLine.popSample(channel, delayInSamples, true) * feedbackFloat;
