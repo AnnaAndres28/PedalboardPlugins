@@ -32,14 +32,14 @@ public:
         : juce::AudioProcessor (BusesProperties().withInput  ("Input",  juce::AudioChannelSet::stereo())
                                            .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
-        addParameter (gain = new juce::AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 3.0f, 0.5f));
+        addParameter (gain = new juce::AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 4.0f, 1.5f));
         addParameter (mode = new juce::AudioParameterFloat({ "mode", 1 }, "Mode", 0.0f, 7.0f, 0.0f));
         addParameter (sc1 = new juce::AudioParameterFloat({ "sc1", 1 }, "SoftClipping1", 1.0f, 10.0f, 1.0f));
         addParameter (sc2 = new juce::AudioParameterFloat({ "sc2", 1 }, "SoftClipping2", 0.0f, 0.33333f, 0.333f));
         addParameter (lowthres4 = new juce::AudioParameterFloat({ "lowthres4", 1 }, "LowThres4", 0.5f, 9.0f, 0.5f));
         addParameter (highthres4 = new juce::AudioParameterFloat({ "highthres4", 1 }, "highthres4", 0.5f, 9.0f, 0.5f));
         addParameter (nBits5 = new juce::AudioParameterFloat({ "nBits5", 1 }, "nBits5", 1.0f, 128.0f, 4.0f));
-        addParameter (percentDrop6 = new juce::AudioParameterFloat({ "percentDrop6", 1 }, "PercentDrop6", 0.0f, 80.0f, 4.0f));
+        addParameter (percentDrop6 = new juce::AudioParameterFloat({ "percentDrop6", 1 }, "PercentDrop6", 0.0f, 10.0f, 4.0f));
         addParameter (threshold7 = new juce::AudioParameterFloat({ "threshold7", 1 }, "Threshold7", 0.5f, 9.0f, 0.5f));
     }
 
@@ -88,7 +88,7 @@ public:
                     }
                 }
                 break;
-            case 3: // harsher type of distortion essentially using a triangle wave
+            case 3: // harsher type of distortion essentially using a triangle wave LOUD AF
                 for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
                     auto* channelData = buffer.getWritePointer(channel);
                     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
@@ -119,7 +119,7 @@ public:
                     }
                 }
                 break;
-            case 5: // bit crushing
+            case 5: // bit crushing GET RID OF ARTIFACTS
                 for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
                     auto* channelData = buffer.getWritePointer(channel);
                     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
