@@ -81,11 +81,11 @@ public:
         // Initializes delay processor
         delayLine.prepare (spec);
         
-        // Delay in seconds is converted to delay in samples
-        delayLine.setDelay (delay->get() * sampleRate);
-        
         // Since the delay parameter is limited to a maximum of 1s, the maximum possible number of samples is sampleRate in samples/s * 1s
         delayLine.setMaximumDelayInSamples (sampleRate);
+      
+        // Delay in seconds is converted to delay in samples
+        delayLine.setDelay (delay->get() * sampleRate);
     }
     
     void releaseResources() override {}
