@@ -131,7 +131,7 @@ public:
             {
                 for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
                 {
-                    lfoValue = (chnl1LFO.processSample(0.0f);
+                    lfoValue = chnl1LFO.processSample(0.0f);
                     delayInSamples = (lfoValue * delayFloat + delayFloat) * sampleRate;
                     chnl1delay.pushSample(channel, channelData[sample]);
                     drySample = channelData[sample];
@@ -146,7 +146,7 @@ public:
             {
                 for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
                 {
-                    lfoValue = (chnl2LFO.processSample(0.0f);
+                    lfoValue = chnl2LFO.processSample(0.0f);
                     delayInSamples = (lfoValue * delayFloat + delayFloat) * sampleRate;
                     chnl2delay.pushSample(channel, channelData[sample]);
                     drySample = channelData[sample];
