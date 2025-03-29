@@ -33,7 +33,7 @@ public:
                                            .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
         addParameter (gain = new juce::AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 3.0f, 1.0f));
-        addParameter (mode = new juce::AudioParameterFloat({ "mode", 1 }, "Mode", 0, 5, 0));
+        addParameter (mode = new juce::AudioParameterInt({ "mode", 1 }, "Mode", 0, 5, 0));
         addParameter (lowthres2 = new juce::AudioParameterFloat({ "lowthres2", 1 }, "Lower Threshold (Mode 2)", 0.5f, 9.0f, 0.5f));
         addParameter (highthres2 = new juce::AudioParameterFloat({ "highthres2", 1 }, "(Higher) Threshold (Mode 2 & 5)", 0.5f, 9.0f, 0.5f));
         addParameter (nBits3 = new juce::AudioParameterFloat({ "nBits5", 1 }, "Number of Bits (Mode 3)", 1.0f, 128.0f, 4.0f));
@@ -52,7 +52,8 @@ public:
         
         auto gainValue = gain->get();
         
-        int modeValue = juce::roundToInt(mode->get());
+        //int modeValue = juce::roundToInt(mode->get());
+        int modeValue = mode->get();
         
         // this seems counter-intuitive but the higher the parameter value, the closer the second calculations will be to 0
         auto hthres2 = lowthres2->get();
@@ -66,7 +67,7 @@ public:
         auto nBits = nBits3->get(); // can be int or float for plugins
         auto ampValues = pow(2, nBits-1);
         
-        auto pDrop = percentDrop6->get();
+        auto pDrop = percentDrop4->get();
         
         
         switch(modeValue) {
@@ -74,9 +75,11 @@ public:
                 for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
                     auto* channelData = buffer.getWritePointer(channel);
                     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-                        float processedSample = channelData[sample] * gainValue; // applying gain
-                        processedSample = abs(fmod(2*processedSample+2,4))-1; // apply harsher gain
-                        channelData[sample] = processedSample;
+                        if(abs(channelData[sample]) >= 0.005) { //potentially change 0.005 to something else
+                            float processedSample = channelData[sample] * gainValue; // applying gain
+                            processedSample = 0.25*(abs(fmod(2*processedSample+2,4)-2)-1); // apply harsher gain, potentially change the 0.25 value if too quiet
+                            channelData[sample] = processedSample;
+                        }
                     }
                 }
                 break;
@@ -105,8 +108,10 @@ public:
                 for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
                     auto* channelData = buffer.getWritePointer(channel);
                     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-                        float processedSample = ceil(ampValues*gainValue*channelData[sample])*(1/ampValues); // apply bit crushing
-                        channelData[sample] = processedSample;
+                        if(abs(channelData[sample]) >= 0.005) { //potentially change 0.005 to something else
+                            float processedSample = ceil(ampValues*gainValue*channelData[sample])*(1/ampValues); // apply bit crushing
+                            channelData[sample] = processedSample;
+                        }
                     }
                 }
                 break;
@@ -114,7 +119,7 @@ public:
                 for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
                     auto* channelData = buffer.getWritePointer(channel);
                     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-                        int randomNum = rand() % 100;
+                        int randomNum = fmod(rand(),100);
                         if(randomNum < pDrop) {
                             channelData[sample] = 0;
                             continue;
@@ -185,7 +190,7 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override
     {
 	    juce::MemoryOutputStream (destData, true).writeFloat (*gain);
-        juce::MemoryOutputStream (destData, true).writeFloat (*mode);
+        juce::MemoryOutputStream (destData, true).writeInt (*mode);
         juce::MemoryOutputStream (destData, true).writeFloat (*lowthres2);
         juce::MemoryOutputStream (destData, true).writeFloat (*highthres2);
         juce::MemoryOutputStream (destData, true).writeFloat (*nBits3);
@@ -196,7 +201,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override
     {
         gain->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-        mode->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
+        mode->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readInt());
         lowthres2->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
         highthres2->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
         nBits3->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
@@ -217,7 +222,7 @@ public:
 private:
     //==============================================================================
     juce::AudioParameterFloat* gain;
-    juce::AudioParameterFloat* mode;
+    juce::AudioParameterInt* mode;
     juce::AudioParameterFloat* lowthres2;
     juce::AudioParameterFloat* highthres2;
     juce::AudioParameterFloat* nBits3;
