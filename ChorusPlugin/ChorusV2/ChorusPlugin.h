@@ -93,8 +93,9 @@ public:
         chnl2delay.setMaximumDelayInSamples (sampleRate * 0.2f);
         
         // Converts delay in seconds to delay in samples and updates delay of both delay lines
-        chnl1delay.setDelay (delay->get() * sampleRate);
-        chnl2delay.setDelay (delay->get() * sampleRate);
+        depthFloat = depth->get();
+        chnl1delay.setDelay (depthFloat * sampleRate);
+        chnl2delay.setDelay (depthFloat * sampleRate);
         
         
         // LFOs
@@ -104,8 +105,9 @@ public:
         chnl2LFO.prepare (spec);
         
         // Updates rate of both LFOs
-        chnl1LFO.setFrequency (rate->get());
-        chnl2LFO.setFrequency (rate->get());
+        rateFloat = rate->get();
+        chnl1LFO.setFrequency (rateFloat);
+        chnl2LFO.setFrequency (rateFloat);
     }
     
     void releaseResources() override {}
@@ -121,6 +123,12 @@ public:
         
         sampleRate = this->getSampleRate();
         totalNumInputChannels  = getTotalNumInputChannels();
+
+        chnl1delay.setDelay (delayFloat * sampleRate);
+        chnl2delay.setDelay (delayFloat * sampleRate);
+        
+        chnl1LFO.setFrequency (rateFloat);
+        chnl2LFO.setFrequency (rateFloat);
         
         for (int channel = 0; channel < totalNumInputChannels; ++channel)
         {
