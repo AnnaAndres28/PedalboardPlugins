@@ -89,8 +89,8 @@ public:
         
         // Since the delay parameter is limited to a maximum of 0.1s, and based on delayInSamples
         // which can double the value of the delay parameter based on the LFO, the maximum possible number of samples is sampleRate in samples/s * 0.2s
-        chnl1delay.setMaximumDelayInSamples (sampleRate * 0.2);
-        chnl2delay.setMaximumDelayInSamples (sampleRate * 0.2);
+        chnl1delay.setMaximumDelayInSamples (sampleRate * 0.2f);
+        chnl2delay.setMaximumDelayInSamples (sampleRate * 0.2f);
         
         // Converts delay in seconds to delay in samples and updates delay of both delay lines
         chnl1delay.setDelay (delay->get() * sampleRate);
