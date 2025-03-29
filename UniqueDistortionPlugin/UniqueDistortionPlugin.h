@@ -75,11 +75,11 @@ public:
                 for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
                     auto* channelData = buffer.getWritePointer(channel);
                     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-                        if(abs(channelData[sample]) >= 0.005) { //potentially change 0.005 to something else
-                            float processedSample = channelData[sample] * gainValue; // applying gain
-                            processedSample = 0.25*(abs(fmod(2*processedSample+2,4)-2)-1); // apply harsher gain, potentially change the 0.25 value if too quiet
-                            channelData[sample] = processedSample;
-                        }
+                        //if(abs(channelData[sample]) >= 0.005) { //potentially change 0.005 to something else
+                        float processedSample = channelData[sample] * gainValue; // applying gain
+                        processedSample = abs(fmod(2*processedSample+2,4)-2)-1; // apply harsher gain, potentially change the 0.25 value if too quiet
+                	channelData[sample] = processedSample;
+                        //}
                     }
                 }
                 break;
@@ -108,10 +108,10 @@ public:
                 for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
                     auto* channelData = buffer.getWritePointer(channel);
                     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-                        if(abs(channelData[sample]) >= 0.005) { //potentially change 0.005 to something else
-                            float processedSample = ceil(ampValues*gainValue*channelData[sample])*(1/ampValues); // apply bit crushing
-                            channelData[sample] = processedSample;
-                        }
+                        //if(abs(channelData[sample]) >= 0.005) { //potentially change 0.005 to something else
+                	float processedSample = ceil(ampValues*gainValue*channelData[sample])*(1/ampValues); // apply bit crushing
+                        channelData[sample] = processedSample;
+                        //}
                     }
                 }
                 break;
