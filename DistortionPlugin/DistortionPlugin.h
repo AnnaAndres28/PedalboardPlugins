@@ -32,15 +32,12 @@ public:
         : juce::AudioProcessor (BusesProperties().withInput  ("Input",  juce::AudioChannelSet::stereo())
                                            .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
-        addParameter (gain = new juce::AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 4.0f, 1.5f));
-        addParameter (mode = new juce::AudioParameterFloat({ "mode", 1 }, "Mode", 0.0f, 7.0f, 0.0f));
-        addParameter (sc1 = new juce::AudioParameterFloat({ "sc1", 1 }, "SoftClipping1", 1.0f, 10.0f, 1.0f));
-        addParameter (sc2 = new juce::AudioParameterFloat({ "sc2", 1 }, "SoftClipping2", 0.0f, 0.33333f, 0.333f));
-        addParameter (lowthres4 = new juce::AudioParameterFloat({ "lowthres4", 1 }, "LowThres4", 0.5f, 9.0f, 0.5f));
-        addParameter (highthres4 = new juce::AudioParameterFloat({ "highthres4", 1 }, "highthres4", 0.5f, 9.0f, 0.5f));
-        addParameter (nBits5 = new juce::AudioParameterFloat({ "nBits5", 1 }, "nBits5", 1.0f, 128.0f, 4.0f));
-        addParameter (percentDrop6 = new juce::AudioParameterFloat({ "percentDrop6", 1 }, "PercentDrop6", 0.0f, 10.0f, 4.0f));
-        addParameter (threshold7 = new juce::AudioParameterFloat({ "threshold7", 1 }, "Threshold7", 0.5f, 9.0f, 0.5f));
+        addParameter (gain = new juce::AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 3.0f, 1.0f));
+        addParameter (mode = new juce::AudioParameterInt({ "mode", 1 }, "Mode", 0, 5, 0));
+        addParameter (sc1 = new juce::AudioParameterFloat({ "sc1", 1 }, "Soft Clipping Factor (Mode 1)", 1.0f, 10.0f, 1.0f));
+        addParameter (sc2 = new juce::AudioParameterFloat({ "sc2", 1 }, "Soft Clipping Factor (Mode 2)", 0.0f, 0.33333f, 0.333f));
+        addParameter (sc3 = new juce::AudioParameterFloat({ "sc3", 1 }, "Soft Clipping Factor (Mode 3)", 5.0f, 50.0f, 30.0f));
+        addParameter (sc4 = new juce::AudioParameterFloat({ "sc4", 1 }, "Soft Clipping Factor (Mode 4)", 1.0f, 5.0f, 3.0f));
     }
 
     //==============================================================================
@@ -54,18 +51,11 @@ public:
     {
         
         auto gainValue = gain->get();
-        int modeValue = juce::roundToInt(mode->get());
+        int modeValue = mode->get();
         auto a1Value = sc1->get();
         auto a2Value = sc2->get();
-        auto lthres4 = lowthres4->get();
-        auto hthres4 = highthres4->get();
-        auto nBits = nBits5->get(); // can be int or float for plugins
-        auto ampValues = pow(2, nBits-1);
-        auto pDrop = percentDrop6->get();
-        auto thres7 = threshold7->get();
-        float wavefoldThreshold = 0.05f / thres7;
-        float lowThreshold = 0.05f / lthres4;
-        float highThreshold = 0.05f / hthres4;
+        auto a3Value = sc3->get();
+        auto a4Value = sc4->get();
         
         switch(modeValue) {
             case 1: // soft clipping
@@ -78,7 +68,7 @@ public:
                     }
                 }
                 break;
-            case 2: // another type of soft clipping
+            case 2: // cubic soft clipping
                 for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
                     auto* channelData = buffer.getWritePointer(channel);
                     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
@@ -88,76 +78,30 @@ public:
                     }
                 }
                 break;
-            case 3: // harsher type of distortion essentially using a triangle wave LOUD AF
+            case 3: // reciprocal soft clipping
                 for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
                     auto* channelData = buffer.getWritePointer(channel);
                     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
                         float processedSample = channelData[sample] * gainValue; // applying gain
-                        processedSample = abs(fmod(2*processedSample+2,4))-1; // apply harsher gain
+                        processedSample = copysign((1-1/(abs(a3Value*processedSample)+1)), processedSample); // apply soft clipping
                         channelData[sample] = processedSample;
                     }
                 }
                 break;
-            case 4: // pause distortion - self made
+            case 4: // two-stage quadratic soft clipping
                 for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
                     auto* channelData = buffer.getWritePointer(channel);
                     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
                         float processedSample = channelData[sample] * gainValue; // applying gain
-                        if(processedSample <= (-1 * highThreshold)) {
-                            processedSample = processedSample + (highThreshold - lowThreshold);
-                        }
-                        else if((-1 * highThreshold) < processedSample <= (-1 * lowThreshold)) {
-                            processedSample = (-1 * lowThreshold);
-                        }
-                        else if(lowThreshold < processedSample <= highThreshold) {
-                            processedSample = lowThreshold;
-                        }
-                        else if(processedSample > highThreshold) {
-                            processedSample = processedSample - (highThreshold - lowThreshold);
-                        }
+                        if (abs(processedSample) > 0.1) {
                             channelData[sample] = processedSample;
-                    }
-                }
-                break;
-            case 5: // bit crushing GET RID OF ARTIFACTS
-                for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
-                    auto* channelData = buffer.getWritePointer(channel);
-                    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-                        float processedSample = ceil(ampValues*gainValue*channelData[sample])*(1/ampValues); // apply bit crushing
-                        channelData[sample] = processedSample;
-                    }
-                }
-                break;
-            case 6: // sample dropout
-                for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
-                    auto* channelData = buffer.getWritePointer(channel);
-                    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-                        int randomNum = rand() % 100;
-                        if(randomNum < pDrop) {
-                            channelData[sample] = 0;
                             continue;
+                        } else if ((0.05 <= abs(processedSample)) && (abs(processedSample) <= 0.1)) {
+                            processedSample = copysign((a4Value-pow(2-abs(a4Value*processedSample),2))/a4Value, processedSample); 
+                        } else {
+                            processedSample = 2*processedSample; // ramp up
                         }
-                        channelData[sample] = channelData[sample] * gainValue;
-                    }
-                }
-                break;
-            case 7: // wave folding
-                for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
-                    auto* channelData = buffer.getWritePointer(channel);
-                    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-                        float processedSample = channelData[sample] * gainValue; // applying gain
-                        float dif = 0;
-                        if(processedSample > wavefoldThreshold) {
-                            dif = processedSample - wavefoldThreshold;
-                            channelData[sample] = wavefoldThreshold - dif;
-                        }
-                        else if(processedSample < (-1 * wavefoldThreshold)) {
-                            dif = wavefoldThreshold - processedSample;
-                            channelData[sample] = wavefoldThreshold + dif;
-                        }
-                        else {
-                            channelData[sample] = processedSample;
-                        }
+                        channelData[sample] = processedSample;
                     }
                 }
                 break;
@@ -203,28 +147,22 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override
     {
 	    juce::MemoryOutputStream (destData, true).writeFloat (*gain);
-        juce::MemoryOutputStream (destData, true).writeFloat (*mode);
+        juce::MemoryOutputStream (destData, true).writeInt (*mode);
         juce::MemoryOutputStream (destData, true).writeFloat (*sc1);
         juce::MemoryOutputStream (destData, true).writeFloat (*sc2);
-        juce::MemoryOutputStream (destData, true).writeFloat (*lowthres4);
-        juce::MemoryOutputStream (destData, true).writeFloat (*highthres4);
-        juce::MemoryOutputStream (destData, true).writeFloat (*nBits5);
-        juce::MemoryOutputStream (destData, true).writeFloat (*percentDrop6);
-        juce::MemoryOutputStream (destData, true).writeFloat (*threshold7);
+        juce::MemoryOutputStream (destData, true).writeFloat (*sc3);
+        juce::MemoryOutputStream (destData, true).writeFloat (*sc4);
     }
 
     // This function recalls the state of the parameters from the last session ran and restores it into the parameter
     void setStateInformation (const void* data, int sizeInBytes) override
     {
         gain->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-        mode->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
+        mode->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readInt());
         sc1->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
         sc2->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-        lowthres4->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-        highthres4->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-        nBits5->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-        percentDrop6->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-        threshold7->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
+        sc3->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
+        sc4->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
     }
 
     //==============================================================================
@@ -241,14 +179,11 @@ public:
 private:
     //==============================================================================
     juce::AudioParameterFloat* gain;
-    juce::AudioParameterFloat* mode;
+    juce::AudioParameterInt* mode;
     juce::AudioParameterFloat* sc1;
     juce::AudioParameterFloat* sc2;
-    juce::AudioParameterFloat* lowthres4;
-    juce::AudioParameterFloat* highthres4;
-    juce::AudioParameterFloat* nBits5;
-    juce::AudioParameterFloat* percentDrop6;
-    juce::AudioParameterFloat* threshold7;
+    juce::AudioParameterFloat* sc3;
+    juce::AudioParameterFloat* sc4;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortionProcessor)
