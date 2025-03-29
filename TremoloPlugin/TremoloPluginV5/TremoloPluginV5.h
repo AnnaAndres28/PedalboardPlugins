@@ -90,9 +90,13 @@ public:
 
     void processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override
     {
+        rateFloat = rate->get();
         depthFloat = depth->get();
         gainFloat = gain->get();
         totalNumInputChannels = getTotalNumInputChannels();
+        
+        chnl1LFO.setFrequency (rateFloat);
+        chnl2LFO.setFrequency (rateFloat);
         
         for (int channel = 0; channel < totalNumInputChannels; ++channel)
         {
