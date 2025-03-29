@@ -138,7 +138,7 @@ public:
                     wetSample = chnl1delay.popSample(channel, delayInSamples, true);
                     
                     // Could possibly make separate depth parameters for chorus and AM...
-                    wetSample = (wetSample * ((depthFloat/5) * lfoValue + (1.0f - (depthFloat/5)))); // Amplitude Modulation
+                    wetSample = (wetSample * ((depthFloat/5.0f) * lfoValue + (1.0f - (depthFloat/5.0f)))); // Amplitude Modulation
                     
                     chnl1delay.pushSample(channel, channelData[sample]);//chnl1delay.pushSample(channel, drySample + wetSample * feedbackFloat); // Feedback
                     
@@ -155,7 +155,7 @@ public:
                     
                     drySample = channelData[sample];
                     wetSample = chnl2delay.popSample(channel, delayInSamples, true);
-                    wetSample = (wetSample * ((depthFloat/5) * lfoValue + (1.0f - (depthFloat/5))));
+                    wetSample = (wetSample * ((depthFloat/5.0f) * lfoValue + (1.0f - (depthFloat/5.0f))));
                     chnl2delay.pushSample(channel, channelData[sample]);//chnl2delay.pushSample(channel, drySample + wetSample * feedbackFloat);
                     
                     channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample * mixFloat);
