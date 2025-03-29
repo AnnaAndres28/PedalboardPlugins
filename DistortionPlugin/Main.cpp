@@ -1,4 +1,5 @@
 #include <JuceHeader.h>
+#include <math.h>
 #include "DistortionPlugin.h"
 
 //==============================================================================
