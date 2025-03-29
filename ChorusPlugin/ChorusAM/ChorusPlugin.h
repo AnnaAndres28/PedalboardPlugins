@@ -155,10 +155,7 @@ public:
                     
                     drySample = channelData[sample];
                     wetSample = chnl2delay.popSample(channel, delayInSamples, true);
-                    
-                    // Could possibly make separate depth parameters for chorus and AM...
                     wetSample = (wetSample * ((depthFloat/5) * lfoValue + (1.0f - (depthFloat/5))));
-                    
                     chnl2delay.pushSample(channel, channelData[sample]);//chnl2delay.pushSample(channel, drySample + wetSample * feedbackFloat);
                     
                     channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample * mixFloat);
