@@ -87,8 +87,9 @@ public:
         delayCHNL2.setMaximumDelayInSamples (sampleRate);
         
         // Delay in seconds is converted to delay in samples
-        delayCHNL1.setDelay (delay->get() * sampleRate);
-        delayCHNL2.setDelay (delay->get() * sampleRate);
+        delayFloat = delay->get();
+        delayCHNL1.setDelay (delayFloat * sampleRate);
+        delayCHNL2.setDelay (delayFloat * sampleRate);
     }
     
     void releaseResources() override {}
@@ -96,9 +97,15 @@ public:
     void processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override
     {
         gainFloat = gain->get();
+        delayFloat = delay->get();
         feedbackFloat = feedback->get();
         mixFloat = mix->get();
+        
+        sampleRate = this->getSampleRate();
         totalNumInputChannels  = getTotalNumInputChannels();
+        
+        delayCHNL1.setDelay (delayFloat * sampleRate);
+        delayCHNL2.setDelay (delayFloat * sampleRate);
         
         for (int channel = 0; channel < totalNumInputChannels; ++channel)
         {
@@ -186,11 +193,13 @@ private:
     juce::AudioParameterFloat* mix;
     
     float gainFloat;
+    float delayFloat;
     float feedbackFloat;
     float mixFloat;
     
     float drySample;
     float wetSample;
+    double sampleRate;
     int totalNumInputChannels;
     
     juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Thiran> delayCHNL1;
