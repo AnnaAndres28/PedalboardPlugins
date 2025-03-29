@@ -114,8 +114,6 @@ public:
                     // No feedback currently for testing purposes
                     delayCHNL1.pushSample(channel, channelData[sample]);//delayCHNL1.pushSample(channel, drySample + wetSample * feedbackFloat);//delayCHNL1.pushSample(channel, drySample * (1.0f - feedbackFloat) + wetSample * feedbackFloat);
                     
-                    //try swapping order of push and pop????????????????????????????????
-                    
                     channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample * mixFloat); // Mix dry sample with delayed sample
                     channelData[sample] *= gainFloat; // Gain
                 }
