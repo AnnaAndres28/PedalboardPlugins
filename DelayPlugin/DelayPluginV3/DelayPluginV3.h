@@ -64,7 +64,7 @@ public:
                                                  .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
         addParameter (gain = new juce::AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 1.0f, 0.5f));
-        addParameter (delay = new juce::AudioParameterFloat ({ "delay", 1 }, "Delay", 0.001f, 1.0f, 0.2f)); // Delay is in seconds
+        addParameter (delay = new juce::AudioParameterFloat ({ "delay", 1 }, "Delay", 0.001f, 1.0f, 0.1f)); // Delay is in seconds
         addParameter (feedback = new juce::AudioParameterFloat ({ "feedback", 1 }, "Feedback", 0.0f, 1.0f, 0.2f));
         addParameter (mix = new juce::AudioParameterFloat ({ "mix", 1 }, "Mix", 0.0f, 1.0f, 0.5f));
     }
@@ -78,7 +78,7 @@ public:
         spec.sampleRate = sampleRate;
         spec.numChannels = getTotalNumOutputChannels();
         
-        // Initializes delay processors
+        // Initializes delay line processors
         delayCHNL1.prepare (spec);
         delayCHNL2.prepare (spec);
         
@@ -108,21 +108,27 @@ public:
             {
                 for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
                 {
-                    delayCHNL1.pushSample(channel, channelData[sample]);
-                    float drySample = channelData[sample];
-                    float wetSample = delayCHNL1.popSample(channel, -1, true) * feedbackFloat; // -1 is used for the second argument of popSample to use value from setDelay in prepareToPlay block
+                    drySample = channelData[sample];
+                    wetSample = delayCHNL1.popSample(channel, -1, true); // Second argument of popSample is -1 to use value from setDelay function
                     
-                    channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample * mixFloat); // Delay Wet/Dry Mix
+                    // No feedback currently for testing purposes
+                    delayCHNL1.pushSample(channel, channelData[sample]);//delayCHNL1.pushSample(channel, drySample + wetSample * feedbackFloat);//delayCHNL1.pushSample(channel, drySample * (1.0f - feedbackFloat) + wetSample * feedbackFloat);
+                    
+                    //try swapping order of push and pop????????????????????????????????
+                    
+                    channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample * mixFloat); // Mix dry sample with delayed sample
                     channelData[sample] *= gainFloat; // Gain
                 }
             }
-            else
+            else // Handles the second channel for stereo input but doesn't run for mono input
             {
                 for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
                 {    
-                    delayCHNL2.pushSample(channel, channelData[sample]);
-                    float drySample = channelData[sample];
-                    float wetSample = delayCHNL2.popSample(channel, -1, true) * feedbackFloat;
+                    drySample = channelData[sample];
+                    wetSample = delayCHNL2.popSample(channel, -1, true);
+                    
+                    // No feedback currently for testing purposes
+                    delayCHNL2.pushSample(channel, channelData[sample]);//delayCHNL2.pushSample(channel, drySample + wetSample * feedbackFloat);//delayCHNL2.pushSample(channel, drySample * (1.0f - feedbackFloat) + wetSample * feedbackFloat);
                     
                     channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample * mixFloat);
                     channelData[sample] *= gainFloat;
@@ -185,10 +191,12 @@ private:
     float feedbackFloat;
     float mixFloat;
     
+    float drySample;
+    float wetSample;
     int totalNumInputChannels;
     
-    juce::dsp::DelayLine<float> delayCHNL1;
-    juce::dsp::DelayLine<float> delayCHNL2;
+    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Thiran> delayCHNL1;
+    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Thiran> delayCHNL2;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayProcessor)
