@@ -66,7 +66,7 @@ public:
         addParameter (gain = new juce::AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 1.0f, 0.5f));
         addParameter (rate = new juce::AudioParameterFloat ({"rate", 1}, "Rate", 0.0f, 10.0f, 5.0f)); // rate is in Hz
         addParameter (depth = new juce::AudioParameterFloat ({"depth", 1}, "Depth", 0.0f, 1.0f, 0.5f));
-        addParameter (delay = new juce::AudioParameterFloat ({ "delay", 1 }, "Delay", 0.001f, 1.0f, 0.2f)); // delay is in seconds
+        addParameter (delay = new juce::AudioParameterFloat ({ "delay", 1 }, "Delay", 0.01f, 0.1f, 0.03f)); // delay is in seconds
         addParameter (feedback = new juce::AudioParameterFloat ({ "feedback", 1 }, "Feedback", 0.0f, 1.0f, 0.2f));
         addParameter (mix = new juce::AudioParameterFloat ({ "mix", 1 }, "Mix", 0.0f, 1.0f, 0.5f));
     }
@@ -81,16 +81,20 @@ public:
         spec.numChannels = getTotalNumOutputChannels();
         
         
-        // Delay Line
+        // Delay Lines
         
-        // Initializes delay processor
-        delayLine.prepare (spec);
+        // Initializes both delay lines
+        chnl1delay.prepare (spec);
+        chnl2delay.prepare (spec);
         
-        // Since the delay parameter is limited to a maximum of 1s (which can be doubled in delayInSamples) the maximum possible number of samples is sampleRate in samples/s * 2s
-        delayLine.setMaximumDelayInSamples (sampleRate * 2);
-      
-        // Delay in seconds is converted to delay in samples
-        delayLine.setDelay (delay->get() * sampleRate);
+        // Since the delay parameter is limited to a maximum of 0.2s, and based on delayInSamples
+        // which can double the value of the delay parameter based on the LFO, the maximum possible number of samples is sampleRate in samples/s * 0.2s
+        chnl1delay.setMaximumDelayInSamples (sampleRate * 0.2);
+        chnl2delay.setMaximumDelayInSamples (sampleRate * 0.2);
+        
+        // Converts delay in seconds to delay in samples and updates delay of both delay lines
+        chnl1delay.setDelay (delay->get() * sampleRate);
+        chnl2delay.setDelay (delay->get() * sampleRate);
         
         
         // LFOs
@@ -117,7 +121,7 @@ public:
         mixFloat = mix->get();
         
         sampleRate = this->getSampleRate();
-        totalNumInputChannels  = getTotalNumInputChannels();     
+        totalNumInputChannels  = getTotalNumInputChannels();
         
         for (int channel = 0; channel < totalNumInputChannels; ++channel)
         {
@@ -129,31 +133,38 @@ public:
                 {
                     lfoValue = chnl1LFO.processSample(0.0f);
                     delayInSamples = (lfoValue * delayFloat + delayFloat) * sampleRate;
-                    delayLine.pushSample(channel, channelData[sample]);
-                    float drySample = channelData[sample];
-                    float wetSample = delayLine.popSample(channel, delayInSamples, true) * feedbackFloat;
-                    wetSample = (wetSample * ((depthFloat/5) * lfoValue + (1.0f - (depthFloat/5)))) * gainFloat; // Amplitude Modulation
                     
-                    channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample * mixFloat); // Delay Wet/Dry Mix
+                    drySample = channelData[sample];
+                    wetSample = chnl1delay.popSample(channel, delayInSamples, true);
+                    
+                    // Could possibly make separate depth parameters for chorus and AM...
+                    wetSample = (wetSample * ((depthFloat/5) * lfoValue + (1.0f - (depthFloat/5)))); // Amplitude Modulation
+                    
+                    chnl1delay.pushSample(channel, channelData[sample]);//chnl1delay.pushSample(channel, drySample + wetSample * feedbackFloat); // Feedback
+                    
+                    channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample * mixFloat); // Mix Delay
                     channelData[sample] *= gainFloat; // Gain
                 }
             }
-            else
+            else // Handles the second channel for stereo input but doesn't run for mono input
             {
                 for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
                 {
                     lfoValue = chnl2LFO.processSample(0.0f);
                     delayInSamples = (lfoValue * delayFloat + delayFloat) * sampleRate;
-                    delayLine.pushSample(channel, channelData[sample]);
-                    float drySample = channelData[sample];
-                    float wetSample = delayLine.popSample(channel, delayInSamples, true) * feedbackFloat;
-                    wetSample = (wetSample * ((depthFloat/5) * lfoValue + (1.0f - (depthFloat/5)))) * gainFloat;
+                    
+                    drySample = channelData[sample];
+                    wetSample = chnl2delay.popSample(channel, delayInSamples, true);
+                    
+                    // Could possibly make separate depth parameters for chorus and AM...
+                    wetSample = (wetSample * ((depthFloat/5) * lfoValue + (1.0f - (depthFloat/5))));
+                    
+                    chnl2delay.pushSample(channel, channelData[sample]);//chnl2delay.pushSample(channel, drySample + wetSample * feedbackFloat);
                     
                     channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample * mixFloat);
                     channelData[sample] *= gainFloat;
                 }
-            }
-            
+            }  
         }
     }
 
@@ -213,25 +224,27 @@ private:
     juce::AudioParameterFloat* feedback;
     juce::AudioParameterFloat* mix;
     
-    double sampleRate;
-    int totalNumInputChannels;
-    int delayInSamples;
-    float lfoValue;
-    
-    juce::dsp::DelayLine<float> delayLine;
-    
-    // The last argument for the following lines is the number of points in the lookup table
-    // To change the waveform of the LFOs, comment out the current waveform and uncomment the desired waveform
-    juce::dsp::Oscillator<float> chnl1LFO { [](float x) { return std::sin (x); }, 200 };
-    juce::dsp::Oscillator<float> chnl2LFO { [](float x) { return std::sin (x); }, 200 };
-    
     float gainFloat;
     float rateFloat;
     float depthFloat;
     float delayFloat;
     float feedbackFloat;
     float mixFloat;
-
+    
+    float lfoValue;
+    float drySample;
+    float wetSample;
+    double sampleRate;
+    int totalNumInputChannels;
+    int delayInSamples;
+    
+    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Thiran> chnl1delay;
+    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Thiran> chnl2delay;
+    
+    // The last argument for the following lines is the number of points in the lookup table
+    juce::dsp::Oscillator<float> chnl1LFO { [](float x) { return std::sin (x); }, 200 };
+    juce::dsp::Oscillator<float> chnl2LFO { [](float x) { return std::sin (x); }, 200 };
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChorusProcessor)
 };
