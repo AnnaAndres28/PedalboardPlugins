@@ -66,7 +66,7 @@ public:
         addParameter (depth = new juce::AudioParameterFloat ({"depth", 1}, "Depth", 0.0f, 1.0f, 0.2f));
         addParameter (gain = new juce::AudioParameterFloat ({"gain", 1}, "Gain", 0.0f, 2.0f, 1.0f));
         
-        // Mode 0: Pass-Through, Mode 1: Sinusoidal LFO, Mode 2: Saw Wave LFO, Mode 3: Square Wave LFO
+        // Waveform 0: Pass-Through, Waveform 1: Sinusoidal LFO, Waveform 2: Saw Wave LFO, Waveform 3: Square Wave LFO
         addParameter (waveform = new juce::AudioParameterInt ({ "waveform", 1 }, "Waveform", 0, 3, 1));
     }
 
@@ -119,7 +119,7 @@ public:
         {
             auto* channelData = buffer.getWritePointer (channel);
             
-            switch(mode)
+            switch(waveformInt)
             {
                 case 1: // Sinusoidal LFO
                     // Both channels have their own LFO for stereo input
