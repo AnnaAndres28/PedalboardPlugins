@@ -39,7 +39,23 @@ public:
 
     //==============================================================================
     // This function is used before audio processing. It lets you initialize variables and set up any other resources prior to running the plugin
-    void prepareToPlay (double, int) override {}
+    void prepareToPlay (double sampleRate, int samplesPerBlock) override
+{
+	/* Example for setting up a JUCE DSP processor (not specific to the oscillator class, it's simply being used as an example since many effects utilize LFOs)
+	
+        // Sets specs for a JUCE DSP processor
+        juce::dsp::ProcessSpec spec;
+        spec.maximumBlockSize = samplesPerBlock;
+        spec.sampleRate = sampleRate;
+        spec.numChannels = getTotalNumOutputChannels();
+        
+        // Initializes the LFO (same function as for other DSP processors)
+        LFO.prepare (spec);
+
+	// Sets the rate of the LFO to 5 Hz (this function is specific to the oscillator class, check JUCE documentation for specific functions needed to set up a different type of processor)
+        LFO.setFrequency (5.0f);
+	*/
+}
     // This function is usually called after the plugin stops taking in audio. It can deallocate any memory used and clean out buffers
     void releaseResources() override {}
 
@@ -60,6 +76,10 @@ public:
                 
                 // write processed sample back to buffer
                 channelData[sample] = processedSample;
+
+		/* Example of how to get a value from the LFO for sample-by-sample processing (value of the argument in processSample doesn't matter, just the data type)
+  		LFO.processSample(0.0f);
+      		*/
             }
         }
     }
@@ -129,6 +149,11 @@ private:
     // TODO: This is where you define your audio parameters from the GUI that your code relies on in the process block. You can also define other variables here.
     // Example:
     // juce::AudioParameterFloat* gain;
+
+    /* Example declaring a JUCE DSP oscillator
+    // The last argument for the following three lines is the number of points in the lookup table
+    juce::dsp::Oscillator<float> LFO { [](float x) { return std::sin (x); }, 200 }; // Sine Wave
+    */
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TempProcessor)
