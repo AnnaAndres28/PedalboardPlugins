@@ -122,6 +122,9 @@ public:
         
         sampleRate = this->getSampleRate();
         totalNumInputChannels  = getTotalNumInputChannels();
+
+        chnl1LFO.setFrequency (rateFloat);
+        chnl2LFO.setFrequency (rateFloat);
         
         for (int channel = 0; channel < totalNumInputChannels; ++channel)
         {
