@@ -93,9 +93,9 @@ public:
         chnl2delay.setMaximumDelayInSamples (sampleRate * 0.2f);
         
         // Converts delay in seconds to delay in samples and updates delay of both delay lines
-        depthFloat = depth->get();
-        chnl1delay.setDelay (depthFloat * sampleRate);
-        chnl2delay.setDelay (depthFloat * sampleRate);
+        delayFloat = delay->get();
+        chnl1delay.setDelay (delayFloat * sampleRate);
+        chnl2delay.setDelay (delayFloat * sampleRate);
         
         
         // LFOs
