@@ -67,7 +67,6 @@ public:
         addParameter (rate = new juce::AudioParameterFloat ({"rate", 1}, "Rate", 0.0f, 10.0f, 5.0f)); // Rate is in Hz
         addParameter (depth = new juce::AudioParameterFloat ({"depth", 1}, "Depth", 0.0f, 1.0f, 0.5f));
         addParameter (delay = new juce::AudioParameterFloat ({ "delay", 1 }, "Delay", 0.01f, 0.1f, 0.03f)); // Delay is in seconds
-        //addParameter (feedback = new juce::AudioParameterFloat ({ "feedback", 1 }, "Feedback", 0.0f, 1.0f, 0.2f));
         addParameter (mix = new juce::AudioParameterFloat ({ "mix", 1 }, "Mix", 0.0f, 1.0f, 0.5f));
         
         // Waveform 0: Pass-Through, Waveform 1: Sinusoidal LFO, Waveform 2: Saw Wave LFO, Waveform 3: Triangle Wave LFO, Waveform 4: Square Wave LFO
@@ -129,7 +128,6 @@ public:
         rateFloat = rate->get();
         depthFloat = depth->get();
         delayFloat = delay->get();
-        //feedbackFloat = feedback->get();
         mixFloat = mix->get();
         waveformInt = waveform->get();
         
@@ -575,7 +573,6 @@ public:
         juce::MemoryOutputStream (destData, true).writeFloat (*rate);
         juce::MemoryOutputStream (destData, true).writeFloat (*depth);
         juce::MemoryOutputStream (destData, true).writeFloat (*delay);
-        //juce::MemoryOutputStream (destData, true).writeFloat (*feedback);
         juce::MemoryOutputStream (destData, true).writeFloat (*mix);
         juce::MemoryOutputStream (destData, true).writeInt (*waveform);
     }
@@ -586,7 +583,6 @@ public:
         rate->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
         depth->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
         delay->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-        //feedback->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
         mix->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
         waveform->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readInt());
     }
@@ -606,7 +602,6 @@ private:
     juce::AudioParameterFloat* rate;
     juce::AudioParameterFloat* depth;
     juce::AudioParameterFloat* delay;
-    //juce::AudioParameterFloat* feedback;
     juce::AudioParameterFloat* mix;
     juce::AudioParameterInt* waveform;
     
@@ -614,7 +609,6 @@ private:
     float rateFloat;
     float depthFloat;
     float delayFloat;
-    //float feedbackFloat;
     float mixFloat;
     int waveformInt;
     
