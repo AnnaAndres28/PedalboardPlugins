@@ -66,8 +66,8 @@ public:
         addParameter (depth = new juce::AudioParameterFloat ({"depth", 1}, "Depth", 0.0f, 1.0f, 0.2f));
         addParameter (gain = new juce::AudioParameterFloat ({"gain", 1}, "Gain", 0.0f, 2.0f, 1.0f));
         
-        // Waveform 0: Pass-Through, Waveform 1: Sinusoidal LFO, Waveform 2: Saw Wave LFO, Waveform 3: Square Wave LFO
-        addParameter (waveform = new juce::AudioParameterInt ({ "waveform", 1 }, "Waveform", 0, 3, 1));
+        // Waveform 0: Pass-Through, Waveform 1: Sinusoidal LFO, Waveform 2: Saw Wave LFO, Waveform 3: Triangle Wave LFO, Waveform 4: Square Wave LFO
+        addParameter (waveform = new juce::AudioParameterInt ({ "waveform", 1 }, "Waveform", 0, 4, 1));
     }
 
     //==============================================================================
@@ -157,7 +157,24 @@ public:
                     }
                     break;
                     
-                case 3: // Square Wave LFO
+                case 3: // Triangle Wave LFO
+                    if (channel == 0)
+                    {
+                        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+                        {
+                            channelData[sample] = (channelData[sample] * (depthFloat * abs(chnl1sawLFO.processSample(0.0f)) + (1.0f - depthFloat))) * gainFloat;
+                        }
+                    }
+                    else
+                    {
+                        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+                        {
+                            channelData[sample] = (channelData[sample] * (depthFloat * abs(chnl2sawLFO.processSample(0.0f)) + (1.0f - depthFloat))) * gainFloat;
+                        }
+                    }
+                    break;
+                    
+                case 4: // Square Wave LFO
                     if (channel == 0)
                     {
                         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
