@@ -67,7 +67,7 @@ public:
         addParameter (rate = new juce::AudioParameterFloat ({"rate", 1 }, "Rate", 0.0f, 10.0f, 5.0f)); // rate is in Hz
         addParameter (depth = new juce::AudioParameterFloat ({"depth", 1 }, "Depth", 0.0f, 1.0f, 0.5f));
         addParameter (delay = new juce::AudioParameterFloat ({ "delay", 1 }, "Delay", 0.001f, 0.01f, 0.003f)); // delay is in seconds
-        addParameter (feedback = new juce::AudioParameterFloat ({ "feedback", 1 }, "Feedback", 0.0f, 1.0f, 0.2f));
+        addParameter (feedback = new juce::AudioParameterFloat ({ "feedback", 1 }, "Feedback", 0.0f, 1.0f, 0.1f));
         addParameter (mix = new juce::AudioParameterFloat ({ "mix", 1 }, "Mix", 0.0f, 1.0f, 0.5f));
         
         // Mode 0: Pass-Through, Mode 1: Additive Flanging, Mode 2: Subtractive Flanging, Mode 3: Through-Zero Flanging
@@ -142,12 +142,12 @@ public:
                     {
                         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
                         {
-                            delayInSamples = (chnl1LFO.processSample(0.0f) * delayFloat + delayFloat) * sampleRate;
+                            delayInSamples = (depthFloat * chnl1LFO.processSample(0.0f) * delayFloat + delayFloat) * sampleRate;
                     
                             drySample = channelData[sample];
                             wetSample = chnl1delay.popSample(channel, delayInSamples, true);
                             chnl1delay.pushSample(channel, drySample + wetSample * feedbackFloat); // Feedback
-                    
+                            
                             channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample * mixFloat); // Mix Delay (wet added to dry)
                             channelData[sample] *= gainFloat; // Gain
                         }
@@ -156,7 +156,7 @@ public:
                     {
                         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
                         {
-                            delayInSamples = (chnl2LFO.processSample(0.0f) * delayFloat + delayFloat) * sampleRate;
+                            delayInSamples = (depthFloat * chnl2LFO.processSample(0.0f) * delayFloat + delayFloat) * sampleRate;
                     
                             drySample = channelData[sample];
                             wetSample = chnl2delay.popSample(channel, delayInSamples, true);
@@ -173,7 +173,7 @@ public:
                     {
                         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
                         {
-                            delayInSamples = (chnl1LFO.processSample(0.0f) * delayFloat + delayFloat) * sampleRate;
+                            delayInSamples = (depthFloat * chnl1LFO.processSample(0.0f) * delayFloat + delayFloat) * sampleRate;
                     
                             drySample = channelData[sample];
                             wetSample = chnl1delay.popSample(channel, delayInSamples, true);
@@ -187,7 +187,7 @@ public:
                     {
                         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
                         {
-                            delayInSamples = (chnl2LFO.processSample(0.0f) * delayFloat + delayFloat) * sampleRate;
+                            delayInSamples = (depthFloat * chnl2LFO.processSample(0.0f) * delayFloat + delayFloat) * sampleRate;
                     
                             drySample = channelData[sample];
                             wetSample = chnl2delay.popSample(channel, delayInSamples, true);
@@ -204,7 +204,7 @@ public:
                     {
                         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
                         {
-                            delayInSamples = (chnl1LFO.processSample(0.0f) * delayFloat + delayFloat) * sampleRate;
+                            delayInSamples = (depthFloat * chnl1LFO.processSample(0.0f) * delayFloat + delayFloat) * sampleRate;
                             
                             drySample = chnl1delay.popSample(channel, delayFloat * sampleRate, true); // Note: not actually dry since it's delayed but reusing the variable name for simplicity
                             wetSample = chnl1delay.popSample(channel, delayInSamples, true);
@@ -218,7 +218,7 @@ public:
                     {
                         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
                         {
-                            delayInSamples = (chnl2LFO.processSample(0.0f) * delayFloat + delayFloat) * sampleRate;
+                            delayInSamples = (depthFloat * chnl2LFO.processSample(0.0f) * delayFloat + delayFloat) * sampleRate;
                             
                             drySample = chnl2delay.popSample(channel, delayFloat * sampleRate, true);
                             wetSample = chnl2delay.popSample(channel, delayInSamples, true);
