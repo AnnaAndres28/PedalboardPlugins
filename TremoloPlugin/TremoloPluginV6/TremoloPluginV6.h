@@ -228,7 +228,7 @@ private:
     juce::AudioParameterFloat* rate;
     juce::AudioParameterFloat* depth;
     juce::AudioParameterFloat* gain;
-    juce::AudioParameterFloat* waveform;
+    juce::AudioParameterInt* waveform;
     
     float rateFloat;
     float depthFloat;
