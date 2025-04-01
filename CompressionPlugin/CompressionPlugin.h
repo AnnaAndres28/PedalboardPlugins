@@ -33,10 +33,12 @@ public:
                                            .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
         // adding parameters as well as their bounds
-	    addParameter (attack = new juce::AudioParameterFloat ({ "attack", 1 }, "Attack", 0.0f, 200.0f, 5.0f));
-	    addParameter (release = new juce::AudioParameterFloat ({ "release", 1 }, "Release", 0.0f, 500.0f, 100.0f));
+	    addParameter (attack = new juce::AudioParameterFloat ({ "attack", 1 }, "Attack", 0.0f, 200.0f, 10.0f));
+	    addParameter (release = new juce::AudioParameterFloat ({ "release", 1 }, "Release", 0.0f, 400.0f, 100.0f));
 	    addParameter (threshold = new juce::AudioParameterFloat ({ "threshold", 1 }, "Threshold", -50.0f, 10.0f, -20.0f)); 
-	    addParameter (ratio = new juce::AudioParameterFloat ({ "ratio", 1 }, "Ratio", 1.0f, 30.0f, 3.0f));
+	    addParameter (ratio = new juce::AudioParameterFloat ({ "ratio", 1 }, "Ratio", 1.0f, 20.0f, 3.0f));
+	    addParameter (thresMod = new juce::AudioParameterInt ({ "thresMod", 1 }, "Threshold Modulation Boolean", 0, 1, 0));
+	    addParameter (thresModFreq = new juce::AudioParameterFloat ({ "thresModFreq", 1 }, "Threshold Modulation Freq", 1.0f, 20.0f, 2.0f));
     }
 
     //==============================================================================
@@ -46,10 +48,14 @@ public:
 	    // initialize the processor and set initial parameter values
         juce::dsp::ProcessSpec spec { samplerate, static_cast<uint32_t>(samplesPerBlock), static_cast<uint32_t>(getTotalNumOutputChannels()) };
 	    compressor.prepare(spec);
-	    compressor.setAttack(5.0f);
+	    compressor.setAttack(10.0f);
 	    compressor.setRelease(100.0f);
 	    compressor.setThreshold(-20.0f);
 	    compressor.setRatio(3.0f);
+	    
+	    lfo.initialise([](float x) { return std::sin(x); }, 256 );
+	    rate = thresModFreq->get();
+	    lfo.setFrequency(rate);
     }
     
     // This function is usually called after the plugin stops taking in audio. It can deallocate any memory used and clean out buffers
@@ -66,11 +72,23 @@ public:
 	    auto releaseValue = release->get();
 	    auto thresholdValue = threshold->get();
 	    auto ratioValue = ratio->get();
+	    auto thresModBool = thresMod->get();
+	    auto freq = thresModFreq->get();
+	    
+	    lfo.setFrequency(freq);
+	    float lfoDepth = 2.0f;
+	    float lfoVal = (lfo.processSample(0.0f)+1.0f)*lfoDepth;
+	    float modThres = juce::jmap(lfoVal, -1.0f, 1.0f, -50.0f, 5.0f)*lfoDepth;
 
 	    // update parameters and apply them to the audio block with process()
 	    compressor.setAttack(attackValue);
 	    compressor.setRelease(releaseValue);
-	    compressor.setThreshold(thresholdValue);
+	    if(thresModBool) {
+	        compressor.setThreshold(modThres);
+	    }
+	    else {
+	        compressor.setThreshold(thresholdValue);
+	    }
 	    compressor.setRatio(ratioValue);
 	    compressor.process(context);
     }
@@ -108,6 +126,8 @@ public:
 	    juce::MemoryOutputStream (destData, true).writeFloat (*release);
 	    juce::MemoryOutputStream (destData, true).writeFloat (*threshold);
 	    juce::MemoryOutputStream (destData, true).writeFloat (*ratio);
+	    juce::MemoryOutputStream (destData, true).writeInt (*thresMod);
+	    juce::MemoryOutputStream (destData, true).writeFloat (*thresModFreq);
     }
 
     // This function recalls the state of the parameters from the last session ran and restores it into the parameter
@@ -117,6 +137,8 @@ public:
 	    release->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
 	    threshold->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
 	    ratio->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
+	    thresMod->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readInt());
+	    thresModFreq->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
     }
 
     //==============================================================================
@@ -132,10 +154,17 @@ public:
 private:
     //==============================================================================
     juce::dsp::Compressor<float> compressor;
+    juce::dsp::Oscillator<float> lfo;
+    
     juce::AudioParameterFloat* attack; //the attack time in milliseconds of the compressor
     juce::AudioParameterFloat* release; //the release time in milliseconds of the compressor
     juce::AudioParameterFloat* threshold; //the threshold in dB of the compressor
     juce::AudioParameterFloat* ratio; //the ratio of the compressor (must be higher or equal to 1)
+    juce::AudioParameterInt* thresMod;
+    juce::AudioParameterFloat* thresModFreq;
+    
+    juce::AudioParameterFloat* lfoRate;
+    float rate;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CompressorProcessor)
