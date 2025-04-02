@@ -93,8 +93,9 @@ public:
         chnl2delay.setMaximumDelayInSamples (sampleRate * 0.2f);
         
         // Converts delay in seconds to delay in samples and updates delay of both delay lines
-        chnl1delay.setDelay (delay->get() * sampleRate);
-        chnl2delay.setDelay (delay->get() * sampleRate);
+        delayFloat = delay->get();
+        chnl1delay.setDelay (delayFloat * sampleRate);
+        chnl2delay.setDelay (delayFloat * sampleRate);
         
         
         // LFOs
@@ -122,7 +123,10 @@ public:
         
         sampleRate = this->getSampleRate();
         totalNumInputChannels  = getTotalNumInputChannels();
-
+        
+        chnl1delay.setDelay (delayFloat * sampleRate);
+        chnl2delay.setDelay (delayFloat * sampleRate);
+        
         chnl1LFO.setFrequency (rateFloat);
         chnl2LFO.setFrequency (rateFloat);
         
@@ -139,7 +143,7 @@ public:
                     
                     drySample = channelData[sample];
                     wetSample = chnl1delay.popSample(channel, delayInSamples, true);
-                    wetSample = (wetSample * ((depthFloat/5.0f) * lfoValue + (1.0f - (depthFloat/5.0f)))); // Amplitude Modulation
+                    wetSample = (wetSample * ((depthFloat/5.0f) * (0.5f * abs(lfoValue) + 0.5f) + (1.0f - (depthFloat/5.0f)))); // Amplitude Modulation
                     chnl1delay.pushSample(channel, channelData[sample]);//chnl1delay.pushSample(channel, drySample + wetSample * feedbackFloat); // Feedback
                     
                     channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample * mixFloat); // Mix Delay
@@ -155,7 +159,7 @@ public:
                     
                     drySample = channelData[sample];
                     wetSample = chnl2delay.popSample(channel, delayInSamples, true);
-                    wetSample = (wetSample * ((depthFloat/5.0f) * lfoValue + (1.0f - (depthFloat/5.0f))));
+                    wetSample = (wetSample * ((depthFloat/5.0f) * (0.5f * abs(lfoValue) + 0.5f) + (1.0f - (depthFloat/5.0f))));
                     chnl2delay.pushSample(channel, channelData[sample]);//chnl2delay.pushSample(channel, drySample + wetSample * feedbackFloat);
                     
                     channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample * mixFloat);
