@@ -88,7 +88,7 @@ public:
                     }
                 }
                 break;
-            case 4: // two-stage quadratic soft clipping
+            case 4: // two-stage quadratic soft clipping add to distortion but comment it out
                 for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
                     auto* channelData = buffer.getWritePointer(channel);
                     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
