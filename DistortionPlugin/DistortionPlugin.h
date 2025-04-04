@@ -5,7 +5,7 @@
  vendor:           JUCE
  website:          https://oshe.io
  description:      distortion audio plugin.
- lastUpdated:	   April 2 2025 by Anna Andres
+ lastUpdated:	   April 4 2025 by Anna Andres
 
  dependencies:     juce_audio_basics, juce_audio_devices, juce_audio_formats,
                    juce_audio_plugin_client, juce_audio_processors, juce_dsp,
@@ -33,11 +33,7 @@ public:
                                            .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
         addParameter (gain = new juce::AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 3.0f, 1.0f));
-        addParameter (mode = new juce::AudioParameterInt({ "mode", 1 }, "Mode", 0, 2, 0));
-        addParameter (si = new juce::AudioParameterFloat({ "si", 1 }, "Saturation Intensity", 1.0f, 10.0f, 1.0f));
-        addParameter (mix = new juce::AudioParameterFloat({ "mix", 1 }, "Mix", 0.0f, 0.0f, 1.0f));
-        addParameter (fh = new juce::AudioParameterFloat({ "fh", 1 }, "Fuzz Harshness", 1.0f, 5.0f, 2.0f));
-        addParameter (fc = new juce::AudioParameterFloat({ "fc", 1 }, "Fuzz Clip", 0.0f, 9.0f, 5.0f));
+        addParameter (di = new juce::AudioParameterFloat({ "di", 1 }, "Distortion Intensity", 5.0f, 50.0f, 30.0f));
     }
 
     //==============================================================================
@@ -51,38 +47,15 @@ public:
     {
         
         auto gainValue = gain->get();
-        int modeValue = mode->get();
-        auto siValue = si->get();
-        auto mixValue = mix->get();
-        auto fhValue = fh->get();
-        auto fcValue = fc->get();
-	float clipThreshold = 0.05f / fcValue;
+        auto diValue = di->get();
         
-        switch(modeValue) {
-            case 1: // mixing hard clipping and saturation
-                for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
-                    auto* channelData = buffer.getWritePointer(channel);
-                    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-                        float processedSample = channelData[sample] * gainValue; // applying gain
-                        processedSample = (1-mix)*tanh(si*x)+copysign((abs(processedSample))^fh, processedSample);
-                        channelData[sample] = processedSample;
-                    }
-                }
-                break;
-            case 2: // mixing fuzz and saturation
-                for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
-                    auto* channelData = buffer.getWritePointer(channel);
-                    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-                        float processedSample = channelData[sample] * gainValue; // applying gain
-			int temp = (processedSample > clipThreshold) ? clipThreshold : ((processedSample < -clipThreshold) ? -clipThreshold : processedSample);
-                        processedSample = (1-mix)*tanh(si*x)+mix*temp; 
-                        channelData[sample] = processedSample;
-                    }
-                }
-                break;
-            default: 
-                // do nothing
-                break;
+        for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
+            auto* channelData = buffer.getWritePointer(channel);
+            for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
+                float processedSample = channelData[sample] * gainValue; // applying gain
+                processedSample = copysign((1-1/(abs(diValue*processedSample)+1)), processedSample); // apply reciprocal clipping function
+                channelData[sample] = processedSample;
+            }
         }
     }
 
@@ -122,22 +95,14 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override
     {
 	juce::MemoryOutputStream (destData, true).writeFloat (*gain);
-        juce::MemoryOutputStream (destData, true).writeInt (*mode);
-        juce::MemoryOutputStream (destData, true).writeFloat (*si);
-        juce::MemoryOutputStream (destData, true).writeFloat (*mix);
-        juce::MemoryOutputStream (destData, true).writeFloat (*fh);
-        juce::MemoryOutputStream (destData, true).writeFloat (*fc);
+        juce::MemoryOutputStream (destData, true).writeFloat (*di);
     }
 
     // This function recalls the state of the parameters from the last session ran and restores it into the parameter
     void setStateInformation (const void* data, int sizeInBytes) override
     {
         gain->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-        mode->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readInt());
-        si->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-        mix->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-        fh->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-        fc->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
+        di->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
     }
 
     //==============================================================================
@@ -154,13 +119,8 @@ public:
 private:
     //==============================================================================
     juce::AudioParameterFloat* gain;
-    juce::AudioParameterInt* mode;
-    juce::AudioParameterFloat* si;
-    juce::AudioParameterFloat* mix;
-    juce::AudioParameterFloat* fc;
-    juce::AudioParameterFloat* fh;
+    juce::AudioParameterFloat* di;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortionProcessor)
 };
-
