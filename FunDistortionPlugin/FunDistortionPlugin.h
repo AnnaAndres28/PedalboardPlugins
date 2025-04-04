@@ -4,8 +4,8 @@
  version:          1.0.0
  vendor:           JUCE
  website:          https://oshe.io
- description:      fun distortion audio plugin. these won't sound like typical distortion effects
- lastUpdated:	   April 1 2025 by Anna Andres
+ description:      fun distortion audio plugin. these won't sound like typical/practical distortion effects
+ lastUpdated:	   April 4 2025 by Anna Andres
 
  dependencies:     juce_audio_basics, juce_audio_devices, juce_audio_formats,
                    juce_audio_plugin_client, juce_audio_processors, juce_dsp,
@@ -79,10 +79,10 @@ public:
                         if(processedSample <= (-1 * highThreshold)) {
                             processedSample = processedSample + (highThreshold - lowThreshold);
                         }
-                        else if(((-1 * highThreshold) < processedSample) && (processedSample <= (-1 * lowThreshold))) {
+                        else if((-1 * highThreshold) < processedSample <= (-1 * lowThreshold)) {
                             processedSample = (-1 * lowThreshold);
                         }
-                        else if((lowThreshold < processedSample) && (processedSample <= highThreshold)) {
+                        else if(lowThreshold < processedSample <= highThreshold) {
                             processedSample = lowThreshold;
                         }
                         else if(processedSample > highThreshold) {
@@ -96,8 +96,8 @@ public:
                 for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
                     auto* channelData = buffer.getWritePointer(channel);
                     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-                        float processedSample = ceil(1000000*ampValues*channelData[sample])*(1/ampValues); // apply bit crushing
-                        channelData[sample] = gainValue*(processedSample/1000000);
+                        float processedSample = ceil(ampValues*channelData[sample])*(1/ampValues); // apply bit crushing
+                        channelData[sample] = gainValue*(processedSample);
                     }
                 }
                 break;
@@ -175,7 +175,7 @@ public:
     // in the next session of running the pedal
     void getStateInformation (juce::MemoryBlock& destData) override
     {
-	    juce::MemoryOutputStream (destData, true).writeFloat (*gain);
+	juce::MemoryOutputStream (destData, true).writeFloat (*gain);
         juce::MemoryOutputStream (destData, true).writeInt (*mode);
         juce::MemoryOutputStream (destData, true).writeFloat (*lowthres);
         juce::MemoryOutputStream (destData, true).writeFloat (*highthres);
