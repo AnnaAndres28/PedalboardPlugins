@@ -5,7 +5,7 @@
  vendor:           JUCE
  website:          https://oshe.io
  description:      Saturation audio plugin.
- lastUpdated:	   March 25 2025 by Anna Andres
+ lastUpdated:	   Aoril 4 2025 by Anna Andres
 
  dependencies:     juce_audio_basics, juce_audio_devices, juce_audio_formats,
                    juce_audio_plugin_client, juce_audio_processors, juce_dsp,
@@ -33,11 +33,9 @@ public:
                                            .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
         addParameter (gain = new juce::AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 3.0f, 1.0f));
-        addParameter (mode = new juce::AudioParameterInt({ "mode", 1 }, "Mode", 0, 5, 0));
+        addParameter (mode = new juce::AudioParameterInt({ "mode", 1 }, "Mode", 0, 2, 0));
         addParameter (sc1 = new juce::AudioParameterFloat({ "sc1", 1 }, "Soft Clipping Factor (Mode 1)", 1.0f, 10.0f, 1.0f));
-        addParameter (sc2 = new juce::AudioParameterFloat({ "sc2", 1 }, "Soft Clipping Factor (Mode 2)", 0.0f, 0.33333f, 0.333f));
-        addParameter (sc3 = new juce::AudioParameterFloat({ "sc3", 1 }, "Soft Clipping Factor (Mode 3)", 5.0f, 50.0f, 30.0f));
-        addParameter (sc4 = new juce::AudioParameterFloat({ "sc4", 1 }, "Soft Clipping Factor (Mode 4)", 1.0f, 5.0f, 3.0f));
+        addParameter (sc2 = new juce::AudioParameterFloat({ "sc2", 1 }, "Soft Clipping Factor (Mode 2)", 0.0f, 0.4f, 0.333f));
     }
 
     //==============================================================================
@@ -54,8 +52,6 @@ public:
         int modeValue = mode->get();
         auto a1Value = sc1->get();
         auto a2Value = sc2->get();
-        auto a3Value = sc3->get();
-        auto a4Value = sc4->get();
         
         switch(modeValue) {
             case 1: // soft clipping
@@ -74,33 +70,6 @@ public:
                     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
                         float processedSample = channelData[sample] * gainValue; // applying gain
                         processedSample = processedSample-a2Value*pow(processedSample,3); // apply soft clipping
-                        channelData[sample] = processedSample;
-                    }
-                }
-                break;
-            case 3: // reciprocal soft clipping
-                for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
-                    auto* channelData = buffer.getWritePointer(channel);
-                    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-                        float processedSample = channelData[sample] * gainValue; // applying gain
-                        processedSample = copysign((1-1/(abs(a3Value*processedSample)+1)), processedSample); // apply soft clipping
-                        channelData[sample] = processedSample;
-                    }
-                }
-                break;
-            case 4: // two-stage quadratic soft clipping add to distortion but comment it out
-                for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
-                    auto* channelData = buffer.getWritePointer(channel);
-                    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-                        float processedSample = channelData[sample] * gainValue; // applying gain
-                        if (abs(processedSample) > 0.1) {
-                            channelData[sample] = processedSample;
-                            continue;
-                        } else if ((0.05 <= abs(processedSample)) && (abs(processedSample) <= 0.1)) {
-                            processedSample = copysign((a4Value-pow(2-abs(a4Value*processedSample),2))/a4Value, processedSample); 
-                        } else {
-                            processedSample = 2*processedSample; // ramp up
-                        }
                         channelData[sample] = processedSample;
                     }
                 }
@@ -150,8 +119,6 @@ public:
         juce::MemoryOutputStream (destData, true).writeInt (*mode);
         juce::MemoryOutputStream (destData, true).writeFloat (*sc1);
         juce::MemoryOutputStream (destData, true).writeFloat (*sc2);
-        juce::MemoryOutputStream (destData, true).writeFloat (*sc3);
-        juce::MemoryOutputStream (destData, true).writeFloat (*sc4);
     }
 
     // This function recalls the state of the parameters from the last session ran and restores it into the parameter
@@ -161,8 +128,6 @@ public:
         mode->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readInt());
         sc1->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
         sc2->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-        sc3->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
-        sc4->setValueNotifyingHost (juce::MemoryInputStream (data, static_cast<size_t> (sizeInBytes), false).readFloat());
     }
 
     //==============================================================================
@@ -182,8 +147,6 @@ private:
     juce::AudioParameterInt* mode;
     juce::AudioParameterFloat* sc1;
     juce::AudioParameterFloat* sc2;
-    juce::AudioParameterFloat* sc3;
-    juce::AudioParameterFloat* sc4;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SaturationProcessor)
