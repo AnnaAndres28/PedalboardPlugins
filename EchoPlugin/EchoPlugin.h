@@ -157,8 +157,8 @@ public:
                             
                             drySample = channelData[sample];
                             
-                            delayCHNL1.pushSample(channel, (drySample * (1.0f - feedbackFloat)) + (wetSample1 * feedbackFloat / 4.0f) + (wetSample2 * feedbackFloat / 6.0f); // Feedback
-                            channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample1 * mixFloat / 4.0f) + (wetSample2 * mixFloat / 6.0f); // Mix dry sample with wet samples
+                            delayCHNL1.pushSample(channel, (drySample * (1.0f - feedbackFloat)) + (wetSample1 * feedbackFloat / 2.0f) + (wetSample2 * feedbackFloat / 4.0f); // Feedback
+                            channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample1 * mixFloat / 2.0f) + (wetSample2 * mixFloat / 4.0f); // Mix dry sample with wet samples
                             channelData[sample] *= gainFloat; // Gain
                         }
                     }
@@ -174,8 +174,8 @@ public:
                             
                             drySample = channelData[sample];
                             
-                            delayCHNL2.pushSample(channel, (drySample * (1.0f - feedbackFloat)) + (wetSample1 * feedbackFloat / 4.0f) + (wetSample2 * feedbackFloat / 6.0f); // Feedback
-                            channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample1 * mixFloat / 4.0f) + (wetSample2 * mixFloat / 6.0f); // Mix dry sample with wet samples
+                            delayCHNL2.pushSample(channel, (drySample * (1.0f - feedbackFloat)) + (wetSample1 * feedbackFloat / 2.0f) + (wetSample2 * feedbackFloat / 4.0f); // Feedback
+                            channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample1 * mixFloat / 2.0f) + (wetSample2 * mixFloat / 4.0f); // Mix dry sample with wet samples
                             channelData[sample] *= gainFloat; // Gain
                         }
                     }
