@@ -71,15 +71,15 @@ public:
             auto* channelData = buffer.getWritePointer(channel);
             for (int sample = 0; sample < buffer.getNumSamples(); ++sample) 
             {
-		// TODO: process the audio sample-by-sample here
-                float processedSample = channelData[sample] * gainValue;
-                
-                // write processed sample back to buffer
-                channelData[sample] = processedSample;
-
 		/* Example of how to get a value from the LFO for sample-by-sample processing (value of the argument in processSample doesn't matter, just the data type)
   		LFO.processSample(0.0f);
       		*/
+		    
+		// TODO: process the audio sample-by-sample here
+                //float processedSample = channelData[sample] * gainValue;
+                
+                // write processed sample back to buffer
+                //channelData[sample] = processedSample;
             }
         }
     }
