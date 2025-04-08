@@ -1,15 +1,15 @@
 /*******************************************************************************
 
  name:             TemplatePlugin
- version:          1.0.0
+ version:          2.0.0
  vendor:           JUCE
  website:          https://oshe.io
  description:      TEMPLATE audio plugin.
- lastUpdated:	   Jan 20 2025 by Anna Andres
+ lastUpdated:	   31 March 2025 by Georgia Heintz
 
  dependencies:     juce_audio_basics, juce_audio_devices, juce_audio_formats,
                    juce_audio_plugin_client, juce_audio_processors,
-                   juce_audio_utils, juce_core, juce_data_structures,
+                   juce_audio_utils, juce_core, juce_data_structures, juce_dsp,
                    juce_events, juce_graphics, juce_gui_basics, juce_gui_extra
  exporters:        linux makefile
 
