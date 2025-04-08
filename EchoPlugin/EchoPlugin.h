@@ -111,6 +111,8 @@ public:
         
         for (int channel = 0; channel < totalNumInputChannels; ++channel)
         {
+            auto* channelData = buffer.getWritePointer (channel);
+            
             switch(echoInt)
             {
                 case 1: // 1 Echo
