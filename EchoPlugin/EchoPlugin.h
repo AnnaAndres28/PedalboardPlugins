@@ -63,11 +63,11 @@ public:
         : juce::AudioProcessor (BusesProperties().withInput  ("Input",  juce::AudioChannelSet::stereo())
                                                  .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
-        addParameter (gain = new juce::AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 1.0f, 0.5f));
+        addParameter (gain = new juce::AudioParameterFloat ({ "gain", 1 }, "Gain", 0.0f, 2.0f, 1.0f));
         addParameter (delay = new juce::AudioParameterFloat ({ "delay", 1 }, "Delay", 0.001f, 1.0f, 0.1f)); // Delay is in seconds
         addParameter (feedback = new juce::AudioParameterFloat ({ "feedback", 1 }, "Feedback", 0.0f, 1.0f, 0.2f));
-        addParameter (mix = new juce::AudioParameterFloat ({ "mix", 1 }, "Mix", 0.0f, 1.0f, 0.5f));
-        addParameter (echo = new juce::AudioParameterInt ({ "echo", 1 }, "Amount of Echoes", 0, 4, 4)); // Zero echoes is pass-through
+        addParameter (mix = new juce::AudioParameterFloat ({ "mix", 1 }, "Mix", 0.0f, 1.0f, 0.3f));
+        addParameter (echo = new juce::AudioParameterInt ({ "echo", 1 }, "Amount of Echoes", 0, 4, 2)); // Zero echoes is pass-through
     }
 
     //==============================================================================
