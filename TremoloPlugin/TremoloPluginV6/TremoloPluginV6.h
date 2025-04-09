@@ -62,7 +62,7 @@ public:
         : juce::AudioProcessor (BusesProperties().withInput  ("Input",  juce::AudioChannelSet::stereo())
                                                  .withOutput ("Output", juce::AudioChannelSet::stereo()))
     {
-        addParameter (rate = new juce::AudioParameterFloat ({"rate", 1}, "Rate", 0.0f, 10.0f, 2.0f)); // rate is in Hz
+        addParameter (rate = new juce::AudioParameterFloat ({"rate", 1}, "Rate", 0.0f, 20.0f, 2.0f)); // rate is in Hz
         addParameter (depth = new juce::AudioParameterFloat ({"depth", 1}, "Depth", 0.0f, 1.0f, 0.2f));
         addParameter (gain = new juce::AudioParameterFloat ({"gain", 1}, "Gain", 0.0f, 2.0f, 1.0f));
         
@@ -255,12 +255,12 @@ private:
     int totalNumInputChannels;
     
     // The last argument for the following lines is the number of points in the lookup table
-    juce::dsp::Oscillator<float> chnl1sineLFO { [](float x) { return std::sin (x); }, 200 }; // Sine Wave
-    juce::dsp::Oscillator<float> chnl1sawLFO { [](float x) { return x / juce::MathConstants<float>::pi; }, 200 }; // Saw Wave
-    juce::dsp::Oscillator<float> chnl1squareLFO { [](float x) { return x < 0.0f ? -1.0f : 1.0f; }, 200 }; // Square Wave
-    juce::dsp::Oscillator<float> chnl2sineLFO { [](float x) { return std::sin (x); }, 200 }; // Sine Wave
-    juce::dsp::Oscillator<float> chnl2sawLFO { [](float x) { return x / juce::MathConstants<float>::pi; }, 200 }; // Saw Wave
-    juce::dsp::Oscillator<float> chnl2squareLFO { [](float x) { return x < 0.0f ? -1.0f : 1.0f; }, 200 }; // Square Wave
+    juce::dsp::Oscillator<float> chnl1sineLFO { [](float x) { return std::sin (x); }, 500 }; // Sine Wave
+    juce::dsp::Oscillator<float> chnl1sawLFO { [](float x) { return x / juce::MathConstants<float>::pi; }, 10000 }; // Saw Wave
+    juce::dsp::Oscillator<float> chnl1squareLFO { [](float x) { return x < 0.0f ? -1.0f : 1.0f; }, 10000 }; // Square Wave
+    juce::dsp::Oscillator<float> chnl2sineLFO { [](float x) { return std::sin (x); }, 500 }; // Sine Wave
+    juce::dsp::Oscillator<float> chnl2sawLFO { [](float x) { return x / juce::MathConstants<float>::pi; }, 10000 }; // Saw Wave
+    juce::dsp::Oscillator<float> chnl2squareLFO { [](float x) { return x < 0.0f ? -1.0f : 1.0f; }, 10000 }; // Square Wave
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TremoloProcessor)
