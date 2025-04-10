@@ -115,39 +115,65 @@ public:
         chnl1squareLFO.setFrequency (rateFloat);
         chnl2squareLFO.setFrequency (rateFloat);
         
-        for (int channel = 0; channel < totalNumInputChannels; ++channel) {
+        for (int channel = 0; channel < totalNumInputChannels; ++channel)
+        {
             auto* channelData = buffer.getWritePointer (channel);
             
-            switch(waveformInt) {
+            switch(waveformInt)
+            {
                 case 1: // Sinusoidal LFO
                     // Both channels have their own LFO for stereo input
-                    if (channel == 0) {
+                    if (channel == 0)
+                    {
                         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+                        {
                             // Tremolo and gain applied to audio sample
                             channelData[sample] = (channelData[sample] * (depthFloat * chnl1sineLFO.processSample(0.0f) + (1.0f - depthFloat))) * gainFloat;
-                    } else { // Handles the second channel for stereo input but doesn't run for mono input
+                        }
+                    }
+                    else // Handles the second channel for stereo input but doesn't run for mono input
+                    {
                         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+                        {
                             channelData[sample] = (channelData[sample] * (depthFloat * chnl2sineLFO.processSample(0.0f) + (1.0f - depthFloat))) * gainFloat;
+                        }
                     }
-                    break;   
+                    break;
+                    
                 case 2: // Saw Wave LFO
-                    if (channel == 0) {
+                    if (channel == 0)
+                    {
                         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+                        {
                             channelData[sample] = (channelData[sample] * (depthFloat * chnl1sawLFO.processSample(0.0f) + (1.0f - depthFloat))) * gainFloat;
-                    } else {
+                        }
+                    }
+                    else
+                    {
                         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+                        {
                             channelData[sample] = (channelData[sample] * (depthFloat * chnl2sawLFO.processSample(0.0f) + (1.0f - depthFloat))) * gainFloat;
+                        }
                     }
-                    break;    
+                    break;
+                    
                 case 3: // Square Wave LFO
-                    if (channel == 0) {
+                    if (channel == 0)
+                    {
                         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+                        {
                             channelData[sample] = (channelData[sample] * (depthFloat * chnl1squareLFO.processSample(0.0f) + (1.0f - depthFloat))) * gainFloat;
-                    } else {
-                        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-                            channelData[sample] = (channelData[sample] * (depthFloat * chnl2squareLFO.processSample(0.0f) + (1.0f - depthFloat))) * gainFloat;
+                        }
                     }
-                    break; 
+                    else
+                    {
+                        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+                        {
+                            channelData[sample] = (channelData[sample] * (depthFloat * chnl2squareLFO.processSample(0.0f) + (1.0f - depthFloat))) * gainFloat;
+                        }
+                    }
+                    break;
+                    
                 default: // Pass-Through
                     break;
             } 
