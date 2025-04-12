@@ -216,7 +216,7 @@ public:
                             delayInSamples4 = (lfoValue * delayFloat/1.75f + delayFloat/1.75f) * sampleRate;
                             delayInSamples5 = (lfoValue * delayFloat/1.4f + delayFloat/1.4f) * sampleRate;
                             delayInSamples6 = (lfoValue * delayFloat/(7.0f/6.0f) + delayFloat/(7.0f/6.0f)) * sampleRate;
-                            delayInSamples7 = (lfoValue * delayFloat + delayFloat * sampleRate;
+                            delayInSamples7 = (lfoValue * delayFloat + delayFloat) * sampleRate;
                     
                             lfoValue = 0.5f * abs(lfoValue) + 0.5f;
                     
@@ -315,7 +315,7 @@ public:
                             delayInSamples4 = (lfoValue * delayFloat/1.75f + delayFloat/1.75f) * sampleRate;
                             delayInSamples5 = (lfoValue * delayFloat/1.4f + delayFloat/1.4f) * sampleRate;
                             delayInSamples6 = (lfoValue * delayFloat/(7.0f/6.0f) + delayFloat/(7.0f/6.0f)) * sampleRate;
-                            delayInSamples7 = (lfoValue * delayFloat + delayFloat * sampleRate;
+                            delayInSamples7 = (lfoValue * delayFloat + delayFloat) * sampleRate;
                     
                             drySample = channelData[sample];
                     
@@ -414,7 +414,7 @@ public:
                             delayInSamples4 = (lfoValue * delayFloat/1.75f + delayFloat/1.75f) * sampleRate;
                             delayInSamples5 = (lfoValue * delayFloat/1.4f + delayFloat/1.4f) * sampleRate;
                             delayInSamples6 = (lfoValue * delayFloat/(7.0f/6.0f) + delayFloat/(7.0f/6.0f)) * sampleRate;
-                            delayInSamples7 = (lfoValue * delayFloat + delayFloat * sampleRate;
+                            delayInSamples7 = (lfoValue * delayFloat + delayFloat) * sampleRate;
                     
                             drySample = channelData[sample];
                     
