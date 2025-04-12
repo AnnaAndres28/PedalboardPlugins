@@ -69,8 +69,8 @@ public:
         addParameter (delay = new juce::AudioParameterFloat ({ "delay", 1 }, "Delay", 0.01f, 0.1f, 0.03f)); // Delay is in seconds
         addParameter (mix = new juce::AudioParameterFloat ({ "mix", 1 }, "Mix", 0.0f, 1.0f, 0.5f));
         
-        // Waveform 0: Pass-Through, Waveform 1: Sinusoidal LFO, Waveform 2: Saw Wave LFO, Waveform 3: Triangle Wave LFO, Waveform 4: Square Wave LFO
-        addParameter (waveform = new juce::AudioParameterInt ({ "waveform", 1 }, "Waveform", 0, 4, 1));
+        // Waveform 0: Pass-Through, Waveform 1: Sinusoidal LFO, Waveform 2: Saw Wave LFO, Waveform 3: Square Wave LFO
+        addParameter (waveform = new juce::AudioParameterInt ({ "waveform", 1 }, "Waveform", 0, 3, 1));
     }
 
     //==============================================================================
@@ -212,7 +212,7 @@ public:
                             delayInSamples4 = (lfoValue * delayFloat/1.75f + delayFloat/1.75f) * sampleRate;
                             delayInSamples5 = (lfoValue * delayFloat/1.4f + delayFloat/1.4f) * sampleRate;
                             delayInSamples6 = (lfoValue * delayFloat/(7.0f/6.0f) + delayFloat/(7.0f/6.0f)) * sampleRate;
-                            delayInSamples7 = (lfoValue * delayFloat + delayFloat) * sampleRate;
+                            delayInSamples7 = (lfoValue * delayFloat + delayFloat * sampleRate;
                     
                             drySample = channelData[sample];
                     
@@ -262,7 +262,7 @@ public:
                             delayInSamples5 = (lfoValue * delayFloat/1.6f + delayFloat/1.6f) * sampleRate;
                             delayInSamples6 = (lfoValue * delayFloat/(4.0f/3.0f) + delayFloat/(4.0f/3.0f)) * sampleRate;
                             delayInSamples7 = (lfoValue * delayFloat/(8.0f/7.0f) + delayFloat/(8.0f/7.0f)) * sampleRate;
-                            delayInSamples8 = (lfoValue * delayFloat + delayFloat) * sampleRate; // Delay parameter controls the lowest (or avg if not using abs for lfoValue) delay of the most delayed sample
+                            delayInSamples8 = (lfoValue * delayFloat + delayFloat) * sampleRate; // Delay parameter controls the average delay of the most delayed sample
                     
                             drySample = channelData[sample];
                     
@@ -311,7 +311,7 @@ public:
                             delayInSamples4 = (lfoValue * delayFloat/1.75f + delayFloat/1.75f) * sampleRate;
                             delayInSamples5 = (lfoValue * delayFloat/1.4f + delayFloat/1.4f) * sampleRate;
                             delayInSamples6 = (lfoValue * delayFloat/(7.0f/6.0f) + delayFloat/(7.0f/6.0f)) * sampleRate;
-                            delayInSamples7 = (lfoValue * delayFloat + delayFloat) * sampleRate;
+                            delayInSamples7 = (lfoValue * delayFloat + delayFloat * sampleRate;
                     
                             drySample = channelData[sample];
                     
@@ -345,106 +345,7 @@ public:
                     }
                     break;
                     
-                case 3: // Triangle Wave LFO
-                    if (channel == 0)
-                    {
-                        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-                        {
-                            chnl1delay.pushSample(channel, channelData[sample]);
-                    
-                            lfoValue = abs(chnl1sawLFO.processSample(0.0f));
-                    
-                            delayInSamples1 = (lfoValue * delayFloat/8.0f + delayFloat/8.0f) * sampleRate;
-                            delayInSamples2 = (lfoValue * delayFloat/4.0f + delayFloat/4.0f) * sampleRate;
-                            delayInSamples3 = (lfoValue * delayFloat/(8.0f/3.0f) + delayFloat/(8.0f/3.0f)) * sampleRate;
-                            delayInSamples4 = (lfoValue * delayFloat/2.0f + delayFloat/2.0f) * sampleRate;
-                            delayInSamples5 = (lfoValue * delayFloat/1.6f + delayFloat/1.6f) * sampleRate;
-                            delayInSamples6 = (lfoValue * delayFloat/(4.0f/3.0f) + delayFloat/(4.0f/3.0f)) * sampleRate;
-                            delayInSamples7 = (lfoValue * delayFloat/(8.0f/7.0f) + delayFloat/(8.0f/7.0f)) * sampleRate;
-                            delayInSamples8 = (lfoValue * delayFloat + delayFloat) * sampleRate; // Delay parameter controls the lowest (or avg if not using abs for lfoValue) delay of the most delayed sample
-                    
-                            drySample = channelData[sample];
-                    
-                            wetSample1 = chnl1delay.popSample(channel, delayInSamples1, true);
-                            wetSample1 = (wetSample1 * ((depthFloat/8.0f) * lfoValue + (1.0f - (depthFloat/8.0f)))); // AM
-                    
-                            wetSample2 = chnl1delay.popSample(channel, delayInSamples2, true);
-                            wetSample2 = (wetSample2 * ((depthFloat/4.0f) * lfoValue + (1.0f - (depthFloat/4.0f))));
-                    
-                            wetSample3 = chnl1delay.popSample(channel, delayInSamples3, true);
-                            wetSample3 = (wetSample3 * ((depthFloat/(8.0f/3.0f)) * lfoValue + (1.0f - (depthFloat/(8.0f/3.0f)))));
-                    
-                            wetSample4 = chnl1delay.popSample(channel, delayInSamples4, true);
-                            wetSample4 = (wetSample4 * ((depthFloat/2.0f) * lfoValue + (1.0f - (depthFloat/2.0f))));
-                    
-                            wetSample5 = chnl1delay.popSample(channel, delayInSamples5, true);
-                            wetSample5 = (wetSample5 * ((depthFloat/1.6f) * lfoValue + (1.0f - (depthFloat/1.6f))));
-                    
-                            wetSample6 = chnl1delay.popSample(channel, delayInSamples6, true);
-                            wetSample6 = (wetSample6 * ((depthFloat/(4.0f/3.0f)) * lfoValue + (1.0f - (depthFloat/(4.0f/3.0f)))));
-                    
-                            wetSample7 = chnl1delay.popSample(channel, delayInSamples7, true);
-                            wetSample7 = (wetSample7 * ((depthFloat/(8.0f/7.0f)) * lfoValue + (1.0f - (depthFloat/(8.0f/7.0f)))));
-                    
-                            wetSample8 = chnl1delay.popSample(channel, delayInSamples8, true);
-                            wetSample8 = (wetSample8 * ((depthFloat) * lfoValue + (1.0f - (depthFloat))));
-                    
-                            channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample1 * mixFloat/4.5f) + (wetSample2 * mixFloat/(36.0f/7.0f)) + (wetSample3 * mixFloat/6.0f) + (wetSample4 * mixFloat/7.2f) + (wetSample5 * mixFloat/9.0f) + (wetSample6 * mixFloat/12.0f) + (wetSample7 * mixFloat/18.0f) + (wetSample8 * mixFloat/36.0f); // Mix dry and wet samples
-                            // Uncomment the line below and comment out the line above for a different mixing ratio
-                            //channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample1 * mixFloat/8.0f) + (wetSample2 * mixFloat/8.0f) + (wetSample3 * mixFloat/8.0f) + (wetSample4 * mixFloat/8.0f) + (wetSample5 * mixFloat/8.0f) + (wetSample6 * mixFloat/8.0f) + (wetSample7 * mixFloat/8.0f) + (wetSample8 * mixFloat/8.0f);
-                    
-                            channelData[sample] *= gainFloat; // Gain
-                        }
-                    }
-                    else
-                    {
-                        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-                        {
-                            chnl2delay.pushSample(channel, channelData[sample]);
-                    
-                            lfoValue = chnl2sawLFO.processSample(0.0f);
-                    
-                            delayInSamples1 = (lfoValue * delayFloat/7.0f + delayFloat/7.0f) * sampleRate;
-                            delayInSamples2 = (lfoValue * delayFloat/3.5f + delayFloat/3.5f) * sampleRate;
-                            delayInSamples3 = (lfoValue * delayFloat/(7.0f/3.0f) + delayFloat/(7.0f/3.0f)) * sampleRate;
-                            delayInSamples4 = (lfoValue * delayFloat/1.75f + delayFloat/1.75f) * sampleRate;
-                            delayInSamples5 = (lfoValue * delayFloat/1.4f + delayFloat/1.4f) * sampleRate;
-                            delayInSamples6 = (lfoValue * delayFloat/(7.0f/6.0f) + delayFloat/(7.0f/6.0f)) * sampleRate;
-                            delayInSamples7 = (lfoValue * delayFloat + delayFloat) * sampleRate;
-                    
-                            drySample = channelData[sample];
-                    
-                            wetSample1 = chnl2delay.popSample(channel, delayInSamples1, true);
-                            wetSample1 = (wetSample1 * ((depthFloat/8.0f) * lfoValue + (1.0f - (depthFloat/8.0f))));
-                    
-                            wetSample2 = chnl2delay.popSample(channel, delayInSamples2, true);
-                            wetSample2 = (wetSample2 * ((depthFloat/4.0f) * lfoValue + (1.0f - (depthFloat/4.0f))));
-                    
-                            wetSample3 = chnl2delay.popSample(channel, delayInSamples3, true);
-                            wetSample3 = (wetSample3 * ((depthFloat/(8.0f/3.0f)) * lfoValue + (1.0f - (depthFloat/(8.0f/3.0f)))));
-                    
-                            wetSample4 = chnl2delay.popSample(channel, delayInSamples4, true);
-                            wetSample4 = (wetSample4 * ((depthFloat/2.0f) * lfoValue + (1.0f - (depthFloat/2.0f))));
-                    
-                            wetSample5 = chnl2delay.popSample(channel, delayInSamples5, true);
-                            wetSample5 = (wetSample5 * ((depthFloat/1.6f) * lfoValue + (1.0f - (depthFloat/1.6f))));
-                    
-                            wetSample6 = chnl2delay.popSample(channel, delayInSamples6, true);
-                            wetSample6 = (wetSample6 * ((depthFloat/(4.0f/3.0f)) * lfoValue + (1.0f - (depthFloat/(4.0f/3.0f)))));
-                    
-                            wetSample7 = chnl2delay.popSample(channel, delayInSamples7, true);
-                            wetSample7 = (wetSample7 * ((depthFloat/(8.0f/7.0f)) * lfoValue + (1.0f - (depthFloat/(8.0f/7.0f)))));
-                    
-                            channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample1 * mixFloat/4.0f) + (wetSample2 * mixFloat/(14.0f/3.0f)) + (wetSample3 * mixFloat/5.6f) + (wetSample4 * mixFloat/7.0f) + (wetSample5 * mixFloat/(28.0f/3.0f)) + (wetSample6 * mixFloat/14.0f) + (wetSample7 * mixFloat/28.0f);
-                            // Uncomment the line below and comment out the line above for a different mixing ratio
-                            //channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample1 * mixFloat/7.0f) + (wetSample2 * mixFloat/7.0f) + (wetSample3 * mixFloat/7.0f) + (wetSample4 * mixFloat/7.0f) + (wetSample5 * mixFloat/7.0f) + (wetSample6 * mixFloat/7.0f) + (wetSample7 * mixFloat/7.0f);
-                    
-                            channelData[sample] *= gainFloat;
-                        }
-                    }
-                    break;
-                    
-                case 4: // Square Wave LFO
+                case 3: // Square Wave LFO
                     if (channel == 0)
                     {
                         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
@@ -460,7 +361,7 @@ public:
                             delayInSamples5 = (lfoValue * delayFloat/1.6f + delayFloat/1.6f) * sampleRate;
                             delayInSamples6 = (lfoValue * delayFloat/(4.0f/3.0f) + delayFloat/(4.0f/3.0f)) * sampleRate;
                             delayInSamples7 = (lfoValue * delayFloat/(8.0f/7.0f) + delayFloat/(8.0f/7.0f)) * sampleRate;
-                            delayInSamples8 = (lfoValue * delayFloat + delayFloat) * sampleRate; // Delay parameter controls the lowest (or avg if not using abs for lfoValue) delay of the most delayed sample
+                            delayInSamples8 = (lfoValue * delayFloat + delayFloat) * sampleRate; // Delay parameter controls the average delay of the most delayed sample
                     
                             drySample = channelData[sample];
                     
@@ -509,7 +410,7 @@ public:
                             delayInSamples4 = (lfoValue * delayFloat/1.75f + delayFloat/1.75f) * sampleRate;
                             delayInSamples5 = (lfoValue * delayFloat/1.4f + delayFloat/1.4f) * sampleRate;
                             delayInSamples6 = (lfoValue * delayFloat/(7.0f/6.0f) + delayFloat/(7.0f/6.0f)) * sampleRate;
-                            delayInSamples7 = (lfoValue * delayFloat + delayFloat) * sampleRate;
+                            delayInSamples7 = (lfoValue * delayFloat + delayFloat * sampleRate;
                     
                             drySample = channelData[sample];
                     
@@ -639,12 +540,12 @@ private:
     juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Thiran> chnl2delay;
     
     // The last argument for the following lines is the number of points in the lookup table
-    juce::dsp::Oscillator<float> chnl1sineLFO { [](float x) { return std::sin (x); }, 200 }; // Sine Wave
-    juce::dsp::Oscillator<float> chnl1sawLFO { [](float x) { return x / juce::MathConstants<float>::pi; }, 200 }; // Saw Wave
-    juce::dsp::Oscillator<float> chnl1squareLFO { [](float x) { return x < 0.0f ? -1.0f : 1.0f; }, 200 }; // Square Wave
-    juce::dsp::Oscillator<float> chnl2sineLFO { [](float x) { return std::sin (x); }, 200 };
-    juce::dsp::Oscillator<float> chnl2sawLFO { [](float x) { return x / juce::MathConstants<float>::pi; }, 200 };
-    juce::dsp::Oscillator<float> chnl2squareLFO { [](float x) { return x < 0.0f ? -1.0f : 1.0f; }, 200 };
+    juce::dsp::Oscillator<float> chnl1sineLFO { [](float x) { return std::sin (x); }, 500 }; // Sine Wave
+    juce::dsp::Oscillator<float> chnl1sawLFO { [](float x) { return x / juce::MathConstants<float>::pi; }, 10000 }; // Saw Wave
+    juce::dsp::Oscillator<float> chnl1squareLFO { [](float x) { return x < 0.0f ? -1.0f : 1.0f; }, 10000 }; // Square Wave
+    juce::dsp::Oscillator<float> chnl2sineLFO { [](float x) { return std::sin (x); }, 500 }; // Sine Wave
+    juce::dsp::Oscillator<float> chnl2sawLFO { [](float x) { return x / juce::MathConstants<float>::pi; }, 10000 }; // Saw Wave
+    juce::dsp::Oscillator<float> chnl2squareLFO { [](float x) { return x < 0.0f ? -1.0f : 1.0f; }, 10000 }; // Square Wave
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChorusProcessor)
