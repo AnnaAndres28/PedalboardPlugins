@@ -230,7 +230,7 @@ public:
                                     wetSample = chnl1delay.popSample(channel, delayInSamples, true);
                                     chnl1delay.pushSample(channel, drySample * (1.0f - feedbackFloat) + wetSample * feedbackFloat); // Feedback
                             
-                                    channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample * mixFloat); // Mix Delay (modulated wet added to delayed wet)
+                                    channelData[sample] = (drySample * (1.0f - mixFloat)) - (wetSample * mixFloat); // Mix Delay (modulated wet added to delayed wet)
                                     channelData[sample] *= gainFloat; // Gain
                                 }
                             }
@@ -244,7 +244,7 @@ public:
                                     wetSample = chnl2delay.popSample(channel, delayInSamples, true);
                                     chnl2delay.pushSample(channel, drySample * (1.0f - feedbackFloat) + wetSample * feedbackFloat);
                             
-                                    channelData[sample] = (drySample * (1.0f - mixFloat)) + (wetSample * mixFloat);
+                                    channelData[sample] = (drySample * (1.0f - mixFloat)) - (wetSample * mixFloat);
                                     channelData[sample] *= gainFloat;
                                 }
                             }
