@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=MyGUI
+Exec= bash -c "sleep 1 && python3 /home/pedal/Desktop/Pedal-GUI/src/gui.py"
+StartupNotify=false
